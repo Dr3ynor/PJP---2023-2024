@@ -1,4 +1,7 @@
 this shit:
+a=a+1 not working
 
-int a,b,c;
-a,b,c=50;
+REWORK EXITMUL SO MODULO WORKS ONLY FOR INTEGERS
+
+this shit:
+i*k+j (multiple operations)

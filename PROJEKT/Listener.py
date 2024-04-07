@@ -78,35 +78,40 @@ class Listener(projectListener):
 
 
     def exitAssignment(self, ctx: projectParser.AssignmentContext):
-        var_name = ctx.ID().getText()
-        expression = ctx.expression()[0].getText()
+        var_names = [var.getText() for var in ctx.ID()]
+        expression = ctx.expression().getText()
 
-    
+        # Reverse the variable names to handle right associativity
+        var_names.reverse()
+
+        for var_name in var_names:
+            if var_name in self.symbol_table[-1]:
+                var_info = self.symbol_table[-1][var_name]
+                var_type = var_info['type']
 
 
+                if var_name in self.symbol_table[-1]:
+                    var_info = self.symbol_table[-1][var_name]
+                    var_type = var_info['type']
+                    print(f"VAR_TYPE: {var_type}")
+                    print(f"EXPRESSION: {expression}")
 
-        if var_name in self.symbol_table[-1]:
-            var_info = self.symbol_table[-1][var_name]
-            var_type = var_info['type']
-            print(f"VAR_TYPE: {var_type}")
-            print(f"EXPRESSION: {expression}")
+                #expected float, got int
+                if '.' not in expression and var_type == 'float':
+                    expression = self.float_to_int_conversion(expression)
 
-            #expected float, got int
-            if '.' not in expression and var_type == 'float':
-                expression = self.float_to_int_conversion(expression)
+                elif var_type == 'int' and not self.is_int(expression):
+                    self.errors.append(f"Type error: Expected int, got {type(expression)}. Name: {var_name}")
+                elif var_type == 'float' and not self.is_float(expression):
+                    self.errors.append(f"Type error: Expected float, got {type(expression)}. Name: {var_name}")
+                elif var_type == 'bool' and not self.is_bool(expression):
+                    self.errors.append(f"Type error: Expected bool, got {type(expression)}. Name: {var_name}")
+                elif var_type == 'string' and not self.is_string(expression):
+                    self.errors.append(f"Type error: Expected string, got {type(expression)}. Name: {var_name}")
 
-            elif var_type == 'int' and not self.is_int(expression):
-                self.errors.append(f"Type error: Expected int, got {type(expression)}. Name: {var_name}")
-            elif var_type == 'float' and not self.is_float(expression):
-                self.errors.append(f"Type error: Expected float, got {type(expression)}. Name: {var_name}")
-            elif var_type == 'bool' and not self.is_bool(expression):
-                self.errors.append(f"Type error: Expected bool, got {type(expression)}. Name: {var_name}")
-            elif var_type == 'string' and not self.is_string(expression):
-                self.errors.append(f"Type error: Expected string, got {type(expression)}. Name: {var_name}")
-
-            var_info['value'] = expression
-        else:
-            pass
+                var_info['value'] = expression
+            else:
+                pass
             #self.errors.append(f"Variable {var_name} not declared")
             # print(f"Variable {var_name} not declared")
 
@@ -124,7 +129,7 @@ class Listener(projectListener):
         elif left != 'true' and left != 'false' or right != 'true' and right != 'false':
             pass
         else:
-            self.errors.append(f"Type error: Expected int or float, got {type(left)} | {left}")
+            self.errors.append(f"Type error: Expected int or float, got {type(left)} | {left} | exitComparisonExpression")
         if '.' in right:
             right = float(right)
         elif right.isdigit():
@@ -132,7 +137,7 @@ class Listener(projectListener):
         elif left != 'true' and left != 'false' or right != 'true' and right != 'false':
             pass
         else:
-            self.errors.append(f"Type error: Expected int or float, got {type(right)} | {right}")
+            self.errors.append(f"Type error: Expected int or float, got {type(right)} | {right}| exitComparisonExpression")
 
         print(F"LEFT TYPE: {type(left).__name__}")
         print(F"RIGHT TYPE: {type(right).__name__}")
@@ -190,21 +195,32 @@ class Listener(projectListener):
         right = ctx.expression(1).getText()
         operator = ctx.getChild(1).getText()
 
+        # Check if left is a variable name in the symbol table
+        if left in self.symbol_table[-1]:
+            left = self.symbol_table[-1][left]['value']
+
+        # Check if right is a variable name in the symbol table
+        if right in self.symbol_table[-1]:
+            right = self.symbol_table[-1][right]['value']
+
         if '.' in left:
             left = float(left)
         elif left.isdigit():
             left = int(left)
+        
         else:
-            self.errors.append(f"Type error: Expected int or float, got {type(left)}")
+            self.errors.append(f"Type error: Expected int or float, got {type(left)} | exitAdd")
         if '.' in right:
             right = float(right)
         elif right.isdigit():
             right = int(right)
         else:
-            self.errors.append(f"Type error: Expected int or float, got {type(right)}")
+            self.errors.append(f"Type error: Expected int or float, got {type(right)}| exitAdd")
 
         print(f"LEFT: {left} | RIGHT: {right}")
     # * or / or %
+    # TODO: REWORK THIS SO MODULO WORKS ONLY FOR INTEGERS
+    
     def exitMul(self, ctx: projectParser.MulContext):
         left = ctx.expression(0).getText()
         right = ctx.expression(1).getText()
@@ -215,13 +231,13 @@ class Listener(projectListener):
         elif left.isdigit():
             left = int(left)
         else:
-            self.errors.append(f"Type error: Expected int or float, got {type(left)}")
+            self.errors.append(f"Type error: Expected int or float, got {type(left)}| exitMul")
         if '.' in right:
             right = float(right)
         elif right.isdigit():
             right = int(right)
         else:
-            self.errors.append(f"Type error: Expected int or float, got {type(right)}")
+            self.errors.append(f"Type error: Expected int or float, got {type(right)} | exitMul")
 
         print(f"OPERATOR: {operator}")
 

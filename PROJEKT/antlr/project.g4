@@ -38,7 +38,8 @@ expression:
 writeCommand: 'write' expression (',' expression)* ';';
 readCommand: 'read' ID (',' ID)* ';';
 
-assignment: ID (ASSIGN expression)* ';';
+//assignment: ID (ASSIGN expression)* ';';
+assignment : ID ('=' ID)* '=' expression ;
 //assignment: (ID ASSIGN)+ expression ';';
 
 

@@ -53,6 +53,15 @@ class projectListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by projectParser#sub.
+    def enterSub(self, ctx:projectParser.SubContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#sub.
+    def exitSub(self, ctx:projectParser.SubContext):
+        pass
+
+
     # Enter a parse tree produced by projectParser#or.
     def enterOr(self, ctx:projectParser.OrContext):
         pass

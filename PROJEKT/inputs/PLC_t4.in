@@ -1,14 +1,1 @@
-int y;
-y=-5;
-//z=10;
-
-string S;
-S="test";
-
-int z;
-while(true)
-{
-	z=50;
-}
-
-//y=1000;
+5.5==5;

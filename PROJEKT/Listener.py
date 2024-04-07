@@ -57,15 +57,11 @@ class Listener(projectListener):
                     #exit(-1)
 
                 self.symbol_table[-1][id_text] = {'type': type_identifier, 'value': default_value}
-
-
         """
         for id in ids:
             print(f"Variable {id.getText()} of type {type_identifier}")
             self.symbol_table[id.getText()] = type_identifier
         """
-
-
     def exitDeclaration(self, ctx: projectParser.VariableDeclarationContext):
         type_identifier = ctx.TYPE().getText()
         ids = ctx.ID()
@@ -84,6 +80,10 @@ class Listener(projectListener):
     def exitAssignment(self, ctx: projectParser.AssignmentContext):
         var_name = ctx.ID().getText()
         expression = ctx.expression()[0].getText()
+
+    
+
+
 
         if var_name in self.symbol_table[-1]:
             var_info = self.symbol_table[-1][var_name]
@@ -110,35 +110,140 @@ class Listener(projectListener):
             #self.errors.append(f"Variable {var_name} not declared")
             # print(f"Variable {var_name} not declared")
 
-
-    """
-    # this doesnt work
     def exitComparisonExpression(self, ctx: projectParser.ComparisonExpressionContext):
-        left = self.visit(ctx.expression(0))
-        right = self.visit(ctx.expression(1))
+        left = ctx.expression(0).getText()
+        right = ctx.expression(1).getText()
         operator = ctx.getChild(1).getText()
 
+        print(f"LEFT: {left} | RIGHT: {right}")
+
+        if '.' in left:
+            left = float(left)
+        elif left.isdigit():
+            left = int(left)
+        elif left != 'true' and left != 'false' or right != 'true' and right != 'false':
+            pass
+        else:
+            self.errors.append(f"Type error: Expected int or float, got {type(left)} | {left}")
+        if '.' in right:
+            right = float(right)
+        elif right.isdigit():
+            right = int(right)
+        elif left != 'true' and left != 'false' or right != 'true' and right != 'false':
+            pass
+        else:
+            self.errors.append(f"Type error: Expected int or float, got {type(right)} | {right}")
+
+        print(F"LEFT TYPE: {type(left).__name__}")
+        print(F"RIGHT TYPE: {type(right).__name__}")
+
+        #write here
+
         if operator == '==':
-            print("equals")
-            self.value = left == right
+            print(f"{left} equals {right}")
+
         elif operator == '!=':
-            print("cant equal")
-            self.value = left != right
+            print(f"{left} cant equal {right}")
+
         elif operator == '<':
-            print("smaller than")
-            self.value = left < right
+            print(f"{left} smaller than {right}")
+
         elif operator == '<=':
-            print("smaller/equal than")
-            self.value = left <= right
+            print(f"{left} smaller/equal than {right}")
+
         elif operator == '>':
-            print("greater than")
-            self.value = left > right
+            print(f"{left} greater than {right}")
+
         elif operator == '>=':
-            print("greater/equals")
-            self.value = left >= right
+            print(f"{left} greater/equals {right}")
 
         pass
-        """
+
+
+    def exitOr(self, ctx: projectParser.OrContext):
+        left = ctx.expression(0).getText()
+        right = ctx.expression(1).getText()
+        print(f"LEFT: {left} | RIGHT: {right}")
+
+        if str(left) != 'true' and str(left) != 'false':
+            self.errors.append(f"Type error: Expected bool, got {type(left)}")
+        elif str(right) != 'true' and str(right) != 'false':
+            self.errors.append(f"Type error: Expected bool, got {type(right)}")
+
+        print(f"{left} OR {right}")
+
+    def exitAnd(self, ctx: projectParser.AndContext):
+        left = ctx.expression(0).getText()
+        right = ctx.expression(1).getText()
+        print(f"LEFT: {left} | RIGHT: {right}")
+
+        if str(left) != 'true' and str(left) != 'false':
+            self.errors.append(f"Type error: Expected bool, got {type(left)}")
+        elif str(right) != 'true' and str(right) != 'false':
+            self.errors.append(f"Type error: Expected bool, got {type(right)}")
+
+        print(f"{left} AND {right}")
+
+    # + and -
+    def exitAdd(self, ctx: projectParser.AddContext):
+        left = ctx.expression(0).getText()
+        right = ctx.expression(1).getText()
+        operator = ctx.getChild(1).getText()
+
+        if '.' in left:
+            left = float(left)
+        elif left.isdigit():
+            left = int(left)
+        else:
+            self.errors.append(f"Type error: Expected int or float, got {type(left)}")
+        if '.' in right:
+            right = float(right)
+        elif right.isdigit():
+            right = int(right)
+        else:
+            self.errors.append(f"Type error: Expected int or float, got {type(right)}")
+
+        print(f"LEFT: {left} | RIGHT: {right}")
+    # * or / or %
+    def exitMul(self, ctx: projectParser.MulContext):
+        left = ctx.expression(0).getText()
+        right = ctx.expression(1).getText()
+        operator = ctx.getChild(1).getText()
+
+        if '.' in left:
+            left = float(left)
+        elif left.isdigit():
+            left = int(left)
+        else:
+            self.errors.append(f"Type error: Expected int or float, got {type(left)}")
+        if '.' in right:
+            right = float(right)
+        elif right.isdigit():
+            right = int(right)
+        else:
+            self.errors.append(f"Type error: Expected int or float, got {type(right)}")
+
+        print(f"OPERATOR: {operator}")
+
+        if operator == '*':
+            print(f"{left} * {right}")
+        elif operator == '/':
+            print(f"{left} / {right}")
+        elif operator == '%':
+            print(f"{left} % {right}")
+        else:
+            self.errors.append(f"Unknown operator {operator}")
+
+    
+    def exitConcat(self, ctx: projectParser.ConcatContext):
+        left = ctx.expression(0).getText()
+        right = ctx.expression(1).getText()
+        operator = ctx.getChild(1).getText()
+
+        if self.is_string(left) and self.is_string(right):
+            print(f"CONCAT: {left} + {right}")
+        else:
+            self.errors.append(f"Type error: Expected string, got {type(left)}")
     def enterProgram(self, ctx:projectParser.ProgramContext):
         print("Entered program")
 
@@ -170,3 +275,4 @@ class Listener(projectListener):
     
     def float_to_int_conversion(self, s):
         return int(float(s))
+    

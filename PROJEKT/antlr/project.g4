@@ -18,7 +18,9 @@ block: '{' statement* '}';
 whileLoop: '[' statement* ']';
 
 expression:
-     INT                                                            #int
+    expression '-' expression                                       #sub
+    | expression '+' expression                                     #add
+    |INT                                                            #int
     | FLOAT                                                         #float
     | BOOLEAN                                                       #boolean
     | '!' expression                                                #not
@@ -26,7 +28,6 @@ expression:
     | STRING_LITERAL                                                #string_literal
     | ID                                                            #id
     | expression ('*' | '/' | '%') expression                       #mul
-    | expression ('+' | '-') expression                             #add
     | expression ('&&') expression                                  #and
     | expression ('||') expression                                  #or
     | expression ('.') expression                                   #concat
@@ -51,9 +52,9 @@ variableDeclaration: TYPE_IDENTIFIER ID ((',' ID)+)? (ASSIGN expression)? ';';
 
 TYPE_IDENTIFIER: ('int' | 'float' | 'bool' | 'string');
 
-INT: ('-'? [0-9]+);
+INT: ([0-9]+);
 
-FLOAT: '-'? [0-9]+ '.'[0-9]+;
+FLOAT: [0-9]+ '.'[0-9]+;
 
 BOOLEAN: ('true' | 'false');
 

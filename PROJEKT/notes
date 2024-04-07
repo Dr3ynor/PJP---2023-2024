@@ -1,0 +1,63 @@
+parser
+lexer
+
+návrh - Visitor
+návrhový vzor Listener
+
+antlr - syntaktický a lexikální analyzátor
+
+
+
+init... akceptuje inicializaci pole
+
+example ArrayInit I
+"[0-9]+" může vzít číslo jednou i vícekrát
+
+
+
+lexer -> vygeneruje sekvenci tokenů
+
+
+
+example arrayInit II -> musím použít pro basic fungování
+
+
+
+
+enterInit a ExitInit -> pro každé rpavidlo
+
+
+visitor x listener -> 
+visitor - je na mě, jak projdu ten strom (metoda visit navštěvuje kontext a projde všechny uzly)
+
+listener - potřenuju zprostředkovatele (walker - rozhraní v jakém pořadí se budou vykonávat události)
+
+jak řešit zpracování chyb?
+udělám listener který bude dědit z BaseErrorListener z antlr runtime -> funkce SyntaxError
+
+
+
+
+priorita expr ->
+od vrchu dolů   
+
+
+
+
+tokens = context.getchildren
+.
+.
+.
+
+blbě, lepší je jednotlivá pravidla pojmenovat a v rámci složitého pravidla můžu mít k ním rovnou řpístup
+
+expr op=(ADD/SUB) expr
+
+
+parsetreeproperty jak uložit hodnotu v procházeném stromě
+projekt:
+
+1) typová kontrola
+
+pomocná struktura
+tabulka symbolů

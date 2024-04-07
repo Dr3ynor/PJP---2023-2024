@@ -1,0 +1,29 @@
+ANTLR runtime and generated code versions disagree: 4.9.2!=4.7.2
+ANTLR runtime and generated code versions disagree: 4.9.2!=4.7.2
+Entered program
+VAR_TYPE: string
+EXPRESSION: "Abcd"
+VAR_TYPE: float
+EXPRESSION: 3.141592
+VAR_TYPE: int
+EXPRESSION: -500
+VAR_TYPE: bool
+EXPRESSION: true
+VAR_TYPE: float
+EXPRESSION: 10
+VAR_TYPE: int
+EXPRESSION: j
+VAR_TYPE: int
+EXPRESSION: 0
+VAR_TYPE: float
+EXPRESSION: 0.0
+VAR_TYPE: string
+EXPRESSION: ""
+VAR_TYPE: bool
+EXPRESSION: true
+[{'s': {'type': 'string', 'value': '"Abcd"'}, 'd': {'type': 'float', 'value': '3.141592'}, 'n': {'type': 'int', 'value': '-500'}, 'boolean': {'type': 'bool', 'value': 'true'}, 'y': {'type': 'float', 'value': 10}, 'i': {'type': 'int', 'value': 'j'}, 'j': {'type': 'int', 'value': 0}, 'k': {'type': 'int', 'value': 0}, 'a': {'type': 'int', 'value': '0'}, 'b': {'type': 'float', 'value': '0.0'}, 'c': {'type': 'string', 'value': '""'}, 'e': {'type': 'bool', 'value': 'true'}, 'x': {'type': 'bool', 'value': False}}]
+Exited program
+---------------------
+TYPE CHECKING ERRORS FOUND!:
+Type error: Expected int, got <class 'str'>. Name: i
+---------------------

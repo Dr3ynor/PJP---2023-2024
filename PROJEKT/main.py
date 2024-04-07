@@ -8,7 +8,7 @@ from VerboseErrorListener import VerboseErrorListener
 from Listener import Listener
 
 def main():
-    with open('inputs/PLC_t3.in', 'r') as file:
+    with open('inputs/PLC_t2.in', 'r') as file:
         data = file.read()
     input_stream = InputStream(data)
     lexer = projectLexer(input_stream)

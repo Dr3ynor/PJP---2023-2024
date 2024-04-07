@@ -7,7 +7,20 @@ class Listener(projectListener):
         self.symbol_table = [{}]
         self.errors = []
 
-    def enterBlock(self, ctx:projectParser.BlockContext):
+
+    def enterLoop(self, ctx: projectParser.LoopContext):
+        print("Entered Loop")
+        print(f"ENTER | Symbol table: {self.symbol_table}")
+        self.symbol_table.append({})
+
+    def exitLoop(self, ctx: projectParser.LoopContext):
+        print(f"EXIT | Symbol table: {self.symbol_table}")
+        print("Exited Loop")
+        self.symbol_table.pop()
+
+
+
+    """def enterBlock(self, ctx:projectParser.BlockContext):
         print("Entered block")
         print(f"ENTER | Symbol table: {self.symbol_table}")
         self.symbol_table.append({})
@@ -15,7 +28,7 @@ class Listener(projectListener):
     def exitBlock(self, ctx:projectParser.BlockContext):
         print(f"EXIT | Symbol table: {self.symbol_table}")
         print("Exited block")
-        self.symbol_table.pop()
+        self.symbol_table.pop()"""
 
     def enterVariableDeclaration(self, ctx:projectParser.VariableDeclarationContext):
         type_identifier = ctx.TYPE_IDENTIFIER().getText()
@@ -24,8 +37,9 @@ class Listener(projectListener):
         for id in ids:
             id_text = id.getText()
             if id_text in self.symbol_table[-1]:
-                print(f"Error: Duplicate variable {id_text}")
-                exit(-1)
+                self.errors.append(f"Error: Duplicate variable {id_text}")
+                # print(f"Error: Duplicate variable {id_text}")
+                # exit(-1)
             else:
                 #print(f"Variable {id_text} of type {type_identifier}")
                 # Set a default value based on the type of the variable
@@ -38,8 +52,9 @@ class Listener(projectListener):
                 elif type_identifier == 'string':
                     default_value = ''
                 else:
-                    print(f"Error: Unknown type {type_identifier}")
-                    exit(-1)
+                    #print(f"Error: Unknown type {type_identifier}")
+                    self.errors.append(f"Error: Unknown type {type_identifier}")
+                    #exit(-1)
 
                 self.symbol_table[-1][id_text] = {'type': type_identifier, 'value': default_value}
 
@@ -58,8 +73,9 @@ class Listener(projectListener):
         for id in ids:
             id_text = id.getText()
             if id_text in self.symbol_table[-1]:
-                print(f"Variable {id_text} already declared")
-                exit(-1)
+                self.errors.append(f"Variable {id_text} already declared")
+                #print(f"Variable {id_text} already declared")
+                #exit(-1)
 
             self.symbol_table[-1][id_text] = {'type': type_identifier, 'value': None}
 
@@ -90,9 +106,39 @@ class Listener(projectListener):
 
             var_info['value'] = expression
         else:
-            print(f"Variable {var_name} not declared")
-            exit(-1) 
+            pass
+            #self.errors.append(f"Variable {var_name} not declared")
+            # print(f"Variable {var_name} not declared")
 
+
+    """
+    # this doesnt work
+    def exitComparisonExpression(self, ctx: projectParser.ComparisonExpressionContext):
+        left = self.visit(ctx.expression(0))
+        right = self.visit(ctx.expression(1))
+        operator = ctx.getChild(1).getText()
+
+        if operator == '==':
+            print("equals")
+            self.value = left == right
+        elif operator == '!=':
+            print("cant equal")
+            self.value = left != right
+        elif operator == '<':
+            print("smaller than")
+            self.value = left < right
+        elif operator == '<=':
+            print("smaller/equal than")
+            self.value = left <= right
+        elif operator == '>':
+            print("greater than")
+            self.value = left > right
+        elif operator == '>=':
+            print("greater/equals")
+            self.value = left >= right
+
+        pass
+        """
     def enterProgram(self, ctx:projectParser.ProgramContext):
         print("Entered program")
 

@@ -5,8 +5,10 @@ y=-5;
 string S;
 S="test";
 
+int z;
 while(true)
-[
-	int b;
-]
+{
+	z=50;
+}
+
 //y=1000;

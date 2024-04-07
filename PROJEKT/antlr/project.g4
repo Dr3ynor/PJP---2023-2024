@@ -7,6 +7,7 @@ statement: emptyCommand=';'
          | writeCommand
          | assignment
          | readCommand
+         | conditionWithoutBrackets
          | condition
          | loop
          | expression ';'
@@ -40,9 +41,10 @@ assignment: ID (ASSIGN expression)* ';';
 //assignment: (ID ASSIGN)+ expression ';';
 
 
-condition: 'if' '(' expression ')' statement ('else' statement)?;
+condition: 'if' '(' expression ')' '{' statement* '}' ('else' statement)?;
+conditionWithoutBrackets: 'if' '(' expression ')' statement ('else' statement)?;
 
-loop: 'while' '(' expression ')' statement;
+loop: 'while' '(' expression ')' '{' statement* '}';
 
 variableDeclaration: TYPE_IDENTIFIER ID ((',' ID)+)? (ASSIGN expression)? ';';
 

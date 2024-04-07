@@ -206,6 +206,15 @@ class projectListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by projectParser#conditionWithoutBrackets.
+    def enterConditionWithoutBrackets(self, ctx:projectParser.ConditionWithoutBracketsContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#conditionWithoutBrackets.
+    def exitConditionWithoutBrackets(self, ctx:projectParser.ConditionWithoutBracketsContext):
+        pass
+
+
     # Enter a parse tree produced by projectParser#loop.
     def enterLoop(self, ctx:projectParser.LoopContext):
         pass

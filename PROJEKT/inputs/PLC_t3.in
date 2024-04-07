@@ -7,17 +7,11 @@ if (true) {
 	write "if";
 }
 
-int a,b;
+int a;
 
-while(a<10) [
+while(a<10) {
  write "a=",a;
- //a=a+1;
-]
+ a=a+1;
+}
 
-
-read b;
-
-while(a<b) [
- write "a=",a,", b=",b;
- //a=a+1;
-]
+a=0;

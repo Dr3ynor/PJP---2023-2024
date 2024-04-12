@@ -1,5 +1,3 @@
-int i,j,k;
-i=j=k=55;
+int x;
 
-
-i+k*j;
+y=0;

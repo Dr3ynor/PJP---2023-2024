@@ -1,294 +1,227 @@
 from antlr.projectListener import projectListener
 from antlr.projectParser import projectParser
+from antlr.projectLexer import projectLexer
+
+from VerboseErrorListener import VerboseErrorListener
+
+from antlr4 import *
+
 
 class Listener(projectListener):
     def __init__(self):
         super().__init__()
-        self.symbol_table = [{}]
+        self.blocks = [{}]
+        self.error_listener = VerboseErrorListener()
         self.errors = []
+        self.values = {}
+        self.keywords = ['write', 'read', 'if', 'else', 'while', 'for', 'int', 'float', 'bool', 'string', 'true', 'false']
+        self.numbers = ['int', 'float']
 
+    def getAllBlocks(self):
+        blocks = {}
+        for block in self.blocks:
+            for key in block:
+                blocks[key] = block[key]
+        return blocks
+    
+    def getBlockWithKey(self, key):
+        for block in self.blocks:
+            if key in block:
+                return block
+        return None
+    
+    def enterBlock(self, ctx: projectParser.BlockContext):
+        self.blocks.append({})
+                           
+    def exitBlock(self, ctx: projectParser.BlockContext):
+        self.blocks.pop()
 
-    def enterLoop(self, ctx: projectParser.LoopContext):
-        print("Entered Loop")
-        print(f"ENTER | Symbol table: {self.symbol_table}")
-        self.symbol_table.append({})
+    def getRuleType(self, ctx:ParserRuleContext):
+        rule = type(ctx).__name__.replace("Context", "").lower()
 
-    def exitLoop(self, ctx: projectParser.LoopContext):
-        print(f"EXIT | Symbol table: {self.symbol_table}")
-        print("Exited Loop")
-        self.symbol_table.pop()
-
-
-
-    """def enterBlock(self, ctx:projectParser.BlockContext):
-        print("Entered block")
-        print(f"ENTER | Symbol table: {self.symbol_table}")
-        self.symbol_table.append({})
-
-    def exitBlock(self, ctx:projectParser.BlockContext):
-        print(f"EXIT | Symbol table: {self.symbol_table}")
-        print("Exited block")
-        self.symbol_table.pop()"""
-
-    def enterVariableDeclaration(self, ctx:projectParser.VariableDeclarationContext):
-        type_identifier = ctx.TYPE_IDENTIFIER().getText()
-        ids = ctx.ID()
-
-        for id in ids:
-            id_text = id.getText()
-            if id_text in self.symbol_table[-1]:
-                self.errors.append(f"Error: Duplicate variable {id_text}")
-                # print(f"Error: Duplicate variable {id_text}")
-                # exit(-1)
-            else:
-                #print(f"Variable {id_text} of type {type_identifier}")
-                # Set a default value based on the type of the variable
-                if type_identifier == 'int':
-                    default_value = 0
-                elif type_identifier == 'float':
-                    default_value = 0.0
-                elif type_identifier == 'bool':
-                    default_value = False
-                elif type_identifier == 'string':
-                    default_value = ''
+        match type(ctx):
+            case projectParser.IdContext:
+                rule = self.getAllBlocks()[ctx.getText()][0]
+            
+            case projectParser.AddSubContext:
+                left_type = self.getRuleType(ctx.expression(0))
+                right_type = self.getRuleType(ctx.expression(1))
+                if left_type not in self.numbers or right_type not in self.numbers:
+                    self.errors.append(f"ERROR: Add/Sub requires int or float, but got {left_type} Add/Sub {right_type}")
+                
+                if left_type == "int" and right_type == "int":
+                    rule = "int"
                 else:
-                    #print(f"Error: Unknown type {type_identifier}")
-                    self.errors.append(f"Error: Unknown type {type_identifier}")
-                    #exit(-1)
+                    rule = "float"
 
-                self.symbol_table[-1][id_text] = {'type': type_identifier, 'value': default_value}
-        """
-        for id in ids:
-            print(f"Variable {id.getText()} of type {type_identifier}")
-            self.symbol_table[id.getText()] = type_identifier
-        """
-    def exitDeclaration(self, ctx: projectParser.VariableDeclarationContext):
-        type_identifier = ctx.TYPE().getText()
-        ids = ctx.ID()
+            case projectParser.MulDivContext:
+                left_type = self.getRuleType(ctx.expression(0))
+                right_type = self.getRuleType(ctx.expression(1))
+                if left_type not in self.numbers or right_type not in self.numbers:
+                    self.errors.append(f"Mul/Div requires int, float, but got {left_type} Mul/Div {right_type}")
+                
+                if left_type == "int" and right_type == "int":
+                    rule = "int"
+                else:
+                    rule = "float"
 
-        for id in ids:
-            id_text = id.getText()
-            if id_text in self.symbol_table[-1]:
-                self.errors.append(f"Variable {id_text} already declared")
-                #print(f"Variable {id_text} already declared")
-                #exit(-1)
+            case projectParser.ModContext:
+                left_type = self.getRuleType(ctx.expression(0))
+                right_type = self.getRuleType(ctx.expression(1))
+                if left_type != "int" or right_type != "int":
+                    self.errors.append(f"Mod requires int, but got {left_type} Mod {right_type}")
+                rule = "int"
 
-            self.symbol_table[-1][id_text] = {'type': type_identifier, 'value': None}
+            case projectParser.NegativeUnaryContext:
+                value_type = self.getRuleType(ctx.expression())
+                if value_type != "int" and value_type != "float":
+                    self.errors.append(f"Negative Unary requires int or float, but got {value_type}")
+                rule = value_type
+            case projectParser.NotContext:
+                value_type = self.getRuleType(ctx.expression())
+                if value_type != "bool":
+                    self.errors.append(f"Not requires bool, but got {value_type}")
+                rule = "bool"
+            case projectParser.AndContext:
+                left_type = self.getRuleType(ctx.expression(0))
+                right_type = self.getRuleType(ctx.expression(1))
+                if left_type != "bool" or right_type != "bool":
+                    self.errors.append(f"And requires bool, but got {left_type} And {right_type}")
+                rule = "bool"
 
+            case projectParser.OrContext:
+                left_type = self.getRuleType(ctx.expression(0))
+                right_type = self.getRuleType(ctx.expression(1))
 
+                if left_type != "bool" or right_type != "bool":
+                    self.errors.append(f"Or requires bool, but got {left_type} Or {right_type}")
+                rule = "bool"
 
-    def exitAssignment(self, ctx: projectParser.AssignmentContext):
-        var_names = [var.getText() for var in ctx.ID()]
-        expression = ctx.expression().getText()
+            case projectParser.RelationalOperationsContext:
+                left_type = self.getRuleType(ctx.expression(0))
+                right_type = self.getRuleType(ctx.expression(1))
+                operator = ctx.getText()
+                match operator:
+                    case "==":
+                        if left_type not in ["int", "float", "string"] or right_type not in ["int", "float", "string"]:
+                            self.errors.append(f"Error: == requires int,float,string, but got {left_type} == {right_type} | exitRelationalOperations")
+                        if left_type != right_type:
+                            self.errors.append(f"Error: == requires int,float,string, but got {left_type} == {right_type} | exitRelationalOperations")
+                    case "!=":
+                        if left_type not in ["int", "float", "string"] or right_type not in ["int", "float", "string"]:
+                            self.errors.append(f"Error: != requires int,float,string, but got {left_type} != {right_type} | exitRelationalOperations")
+                    case ">":
+                        if left_type not in self.numbers or right_type not in self.numbers:
+                            self.errors.append(f"Error: > requires int,float type, but got {left_type} > {right_type} | exitRelationalOperations")
+                    case "<":
+                        if left_type not in self.numbers or right_type not in self.numbers:
+                            self.errors.append(f"Error: < requires int,float type, but got {left_type} < {right_type} | exitRelationalOperations")
+                    case ">=":
+                        if left_type not in self.numbers or right_type not in self.numbers:
+                            self.errors.append(f"Error: >= requires int,float type, but got {left_type} >= {right_type} | exitRelationalOperations")
+                    case "<=":
+                        if left_type not in self.numbers or right_type not in self.numbers:
+                            self.errors.append(f"Error: <= requires int,float type, but got {left_type} <= {right_type} | exitRelationalOperations")
+                rule = "bool"
+            case projectParser.ParenthesisContext:
+                rule = self.getRuleType(ctx.expression())
+        
+        return rule
+    
+    def exitVariableDeclaration(self, ctx: projectParser.VariableDeclarationContext):
+        for i in range(len(ctx.ID())):
+            name = ctx.ID(i)
+            data_type = ctx.TYPE_IDENTIFIER()
 
-        # Reverse the variable names to handle right associativity
-        var_names.reverse()
-
-        for var_name in var_names:
-            if var_name in self.symbol_table[-1]:
-                var_info = self.symbol_table[-1][var_name]
-                var_type = var_info['type']
-
-
-                if var_name in self.symbol_table[-1]:
-                    var_info = self.symbol_table[-1][var_name]
-                    var_type = var_info['type']
-                    print(f"VAR_TYPE: {var_type}")
-                    print(f"EXPRESSION: {expression}")
-
-                #expected float, got int
-                if '.' not in expression and var_type == 'float':
-                    expression = self.float_to_int_conversion(expression)
-
-                elif var_type == 'int' and not self.is_int(expression):
-                    self.errors.append(f"Type error: Expected int, got {type(expression)}. Name: {var_name}")
-                elif var_type == 'float' and not self.is_float(expression):
-                    self.errors.append(f"Type error: Expected float, got {type(expression)}. Name: {var_name}")
-                elif var_type == 'bool' and not self.is_bool(expression):
-                    self.errors.append(f"Type error: Expected bool, got {type(expression)}. Name: {var_name}")
-                elif var_type == 'string' and not self.is_string(expression):
-                    self.errors.append(f"Type error: Expected string, got {type(expression)}. Name: {var_name}")
-
-                var_info['value'] = expression
+            if str(name) in self.getAllBlocks():
+                self.errors.append(f"Error: Variable {name} already declared | exitVariableDeclaration")
             else:
-                pass
-            #self.errors.append(f"Variable {var_name} not declared")
-            # print(f"Variable {var_name} not declared")
+                match data_type.getText():
+                    case "int":
+                        self.blocks[len(self.blocks) - 1][str(name)] = (data_type.getText(), 0)
+                    case "float":
+                        self.blocks[len(self.blocks) - 1][str(name)] = (data_type.getText(), 0.0)
+                    case "string":
+                        self.blocks[len(self.blocks) - 1][str(name)] = (data_type.getText(), "")
+                    case "bool":
+                        self.blocks[len(self.blocks) - 1][str(name)] = (data_type.getText(), False)
+                    case _:
+                        self.errors.append(f"Error: Unknown data type {data_type.getText()} | exitVariableDeclaration")
 
-    def exitComparisonExpression(self, ctx: projectParser.ComparisonExpressionContext):
-        left = ctx.expression(0).getText()
-        right = ctx.expression(1).getText()
-        operator = ctx.getChild(1).getText()
+    # TODO: PROBLEM HERE!
+    def exitAssignment(self, ctx: projectParser.AssignmentContext):
+        name = ctx.ID()
+        expression = None
 
-        print(f"LEFT: {left} | RIGHT: {right}")
+        while True:
+            if expression is None:
+                expression = ctx.expression()
+            else:
+                expression = expression.expression()
+            if type(expression).__name__.replace("Context", "").lower() != "assignment":
+                break
 
-        if '.' in left:
-            left = float(left)
-        elif left.isdigit():
-            left = int(left)
-        elif left != 'true' and left != 'false' or right != 'true' and right != 'false':
-            pass
-        else:
-            self.errors.append(f"Type error: Expected int or float, got {type(left)} | {left} | exitComparisonExpression")
-        if '.' in right:
-            right = float(right)
-        elif right.isdigit():
-            right = int(right)
-        elif left != 'true' and left != 'false' or right != 'true' and right != 'false':
-            pass
-        else:
-            self.errors.append(f"Type error: Expected int or float, got {type(right)} | {right}| exitComparisonExpression")
-
-        print(F"LEFT TYPE: {type(left).__name__}")
-        print(F"RIGHT TYPE: {type(right).__name__}")
-
-        #write here
-
-        if operator == '==':
-            print(f"{left} equals {right}")
-
-        elif operator == '!=':
-            print(f"{left} cant equal {right}")
-
-        elif operator == '<':
-            print(f"{left} smaller than {right}")
-
-        elif operator == '<=':
-            print(f"{left} smaller/equal than {right}")
-
-        elif operator == '>':
-            print(f"{left} greater than {right}")
-
-        elif operator == '>=':
-            print(f"{left} greater/equals {right}")
-
-        pass
-
-
-    def exitOr(self, ctx: projectParser.OrContext):
-        left = ctx.expression(0).getText()
-        right = ctx.expression(1).getText()
-        print(f"LEFT: {left} | RIGHT: {right}")
-
-        if str(left) != 'true' and str(left) != 'false':
-            self.errors.append(f"Type error: Expected bool, got {type(left)}")
-        elif str(right) != 'true' and str(right) != 'false':
-            self.errors.append(f"Type error: Expected bool, got {type(right)}")
-
-        print(f"{left} OR {right}")
-
-    def exitAnd(self, ctx: projectParser.AndContext):
-        left = ctx.expression(0).getText()
-        right = ctx.expression(1).getText()
-        print(f"LEFT: {left} | RIGHT: {right}")
-
-        if str(left) != 'true' and str(left) != 'false':
-            self.errors.append(f"Type error: Expected bool, got {type(left)}")
-        elif str(right) != 'true' and str(right) != 'false':
-            self.errors.append(f"Type error: Expected bool, got {type(right)}")
-
-        print(f"{left} AND {right}")
-
-    # + and -
-    def exitAdd(self, ctx: projectParser.AddContext):
-        left = ctx.expression(0).getText()
-        right = ctx.expression(1).getText()
-        operator = ctx.getChild(1).getText()
-
-        # Check if left is a variable name in the symbol table
-        if left in self.symbol_table[-1]:
-            left = self.symbol_table[-1][left]['value']
-
-        # Check if right is a variable name in the symbol table
-        if right in self.symbol_table[-1]:
-            right = self.symbol_table[-1][right]['value']
-
-        if '.' in left:
-            left = float(left)
-        elif left.isdigit():
-            left = int(left)
+        value = expression
+        data_type = self.getRuleType(value)
+        block = self.getBlockWithKey(str(name))
+        if block is None:
+            self.errors.append(f"Error: Variable {name} not declared | exitAssignment")
+            return
+        declaration_type = block[str(name)][0]
         
-        else:
-            self.errors.append(f"Type error: Expected int or float, got {type(left)} | exitAdd")
-        if '.' in right:
-            right = float(right)
-        elif right.isdigit():
-            right = int(right)
-        else:
-            self.errors.append(f"Type error: Expected int or float, got {type(right)}| exitAdd")
+        if data_type == declaration_type:
+            #conversion
+            if data_type == "int" and declaration_type == "float":
+                data_type = "float"
+            else:
+                self.errors.append(f"Error: Variable {name} is {declaration_type}, but got {data_type} | exitAssignment")
 
-        print(f"LEFT: {left} | RIGHT: {right}")
-    # * or / or %
-    # TODO: REWORK THIS SO MODULO WORKS ONLY FOR INTEGERS
-    
-    def exitMul(self, ctx: projectParser.MulContext):
-        left = ctx.expression(0).getText()
-        right = ctx.expression(1).getText()
-        operator = ctx.getChild(1).getText()
-
-        if '.' in left:
-            left = float(left)
-        elif left.isdigit():
-            left = int(left)
+        if str(value.getText()).isdecimal() and declaration_type == "float":
+            block[str(name)] = (str(declaration_type),float(value.getText()))
         else:
-            self.errors.append(f"Type error: Expected int or float, got {type(left)}| exitMul")
-        if '.' in right:
-            right = float(right)
-        elif right.isdigit():
-            right = int(right)
-        else:
-            self.errors.append(f"Type error: Expected int or float, got {type(right)} | exitMul")
+            block[str(name)] = (str(declaration_type),value.getText())
 
-        print(f"OPERATOR: {operator}")
-
-        if operator == '*':
-            print(f"{left} * {right}")
-        elif operator == '/':
-            print(f"{left} / {right}")
-        elif operator == '%':
-            print(f"{left} % {right}")
-        else:
-            self.errors.append(f"Unknown operator {operator}")
-
-    
     def exitConcat(self, ctx: projectParser.ConcatContext):
-        left = ctx.expression(0).getText()
-        right = ctx.expression(1).getText()
-        operator = ctx.getChild(1).getText()
+        left_value = ctx.expression(0)
+        right_value = ctx.expression(1)
+        data_type_left= type(left_value).__name__.replace("Context", "").lower()
+        data_type_right = type(right_value).__name__.replace("Context", "").lower()
 
-        if self.is_string(left) and self.is_string(right):
-            print(f"CONCAT: {left} + {right}")
-        else:
-            self.errors.append(f"Type error: Expected string, got {type(left)}")
-    def enterProgram(self, ctx:projectParser.ProgramContext):
-        print("Entered program")
+        if data_type_left != "string" or data_type_right != "string":
+            self.errors.append(f"Error: Concat requires string, but got {data_type_left} Concat {data_type_right} | exitConcat")
 
-    def exitProgram(self, ctx:projectParser.ProgramContext):
-        print(f"{self.symbol_table}")
-        print("Exited program")
+    # While loop
+    def exitLoop(self, ctx: projectParser.LoopContext):
+        value = ctx.expression()
+        data_type = self.getRuleType(value)
+        if data_type != "bool":
+            self.errors.append(f"Error: Loop requires bool, but got {data_type} | exitLoop")
+
+    def exitCondition(self, ctx: projectParser.ConditionContext):
+        value = ctx.expression()
+        data_type =self.getRuleType(value)
+        if data_type != "bool":
+            self.errors.append(f"Error: Condition requires bool, but got {data_type} | exitCondition")
     
-    def is_float(self, s):
-        if'.' in s:
-            return True
-        else:
-            return False
+    # TODO: TEST THIS:
+    def exitConditionWithoutBrackets(self, ctx: projectParser.ConditionWithoutBracketsContext):
+        value = ctx.expression()
+        data_type =self.getRuleType(value)
+        if data_type != "bool":
+            self.errors.append(f"Error: Condition requires bool, but got {data_type} | exitCondition")
+
+    def exitForLoop(self, ctx: projectParser.ForLoopContext):
+        data_type2 = self.getRuleType(ctx.expression(1))
+        if data_type2 != "bool":
+            self.errors.append(f"Error: For Loop requires bool, but got {data_type2} | exitForLoop")
+
+    def exitEveryRule(self, ctx):
+        self.getRuleType(ctx)
+    
+
+    def enterProgram(self, ctx: projectParser.ProgramContext):
+        print("Program Entered")
+
+    def exitProgram(self, ctx: projectParser.ProgramContext):
+        print("Program Exited")
         
-    def is_string(self,s):
-        if '"' in s:
-            return True
-        else:
-            return False
-        
-    def is_bool(self,s):
-        if s == 'true' or s == 'false':
-            return True
-        else:
-            return False
-    def is_int(self, s):
-        if s[0] in ('-', '+'):
-            return s[1:].isdigit()
-        return s.isdigit()
-    
-    def float_to_int_conversion(self, s):
-        return int(float(s))
-    

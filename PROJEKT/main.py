@@ -15,7 +15,6 @@ def main():
     stream = CommonTokenStream(lexer)
     parser = projectParser(stream)
     
-    # Create an instance of VerboseListener and register it with the parser
     error_listener = VerboseErrorListener()
     parser.removeErrorListeners()  # Remove the default error listener
     parser.addErrorListener(error_listener)  # Add the verbose error listener
@@ -28,7 +27,6 @@ def main():
             print(error)
         print("---------------------")
         return
-
 
     listener = Listener()
     walker = ParseTreeWalker()
@@ -43,7 +41,5 @@ def main():
         return
     print("Parsing completed")
     #print(Trees.toStringTree(tree, None, parser))
-
-
 if __name__ == '__main__':
     main()

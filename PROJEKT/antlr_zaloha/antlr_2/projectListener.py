@@ -35,21 +35,30 @@ class projectListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by projectParser#statementList.
-    def enterStatementList(self, ctx:projectParser.StatementListContext):
+    # Enter a parse tree produced by projectParser#whileLoop.
+    def enterWhileLoop(self, ctx:projectParser.WhileLoopContext):
         pass
 
-    # Exit a parse tree produced by projectParser#statementList.
-    def exitStatementList(self, ctx:projectParser.StatementListContext):
+    # Exit a parse tree produced by projectParser#whileLoop.
+    def exitWhileLoop(self, ctx:projectParser.WhileLoopContext):
         pass
 
 
-    # Enter a parse tree produced by projectParser#mod.
-    def enterMod(self, ctx:projectParser.ModContext):
+    # Enter a parse tree produced by projectParser#add.
+    def enterAdd(self, ctx:projectParser.AddContext):
         pass
 
-    # Exit a parse tree produced by projectParser#mod.
-    def exitMod(self, ctx:projectParser.ModContext):
+    # Exit a parse tree produced by projectParser#add.
+    def exitAdd(self, ctx:projectParser.AddContext):
+        pass
+
+
+    # Enter a parse tree produced by projectParser#sub.
+    def enterSub(self, ctx:projectParser.SubContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#sub.
+    def exitSub(self, ctx:projectParser.SubContext):
         pass
 
 
@@ -62,21 +71,21 @@ class projectListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by projectParser#negativeUnary.
-    def enterNegativeUnary(self, ctx:projectParser.NegativeUnaryContext):
+    # Enter a parse tree produced by projectParser#mul.
+    def enterMul(self, ctx:projectParser.MulContext):
         pass
 
-    # Exit a parse tree produced by projectParser#negativeUnary.
-    def exitNegativeUnary(self, ctx:projectParser.NegativeUnaryContext):
+    # Exit a parse tree produced by projectParser#mul.
+    def exitMul(self, ctx:projectParser.MulContext):
         pass
 
 
-    # Enter a parse tree produced by projectParser#addSub.
-    def enterAddSub(self, ctx:projectParser.AddSubContext):
+    # Enter a parse tree produced by projectParser#comparisonExpression.
+    def enterComparisonExpression(self, ctx:projectParser.ComparisonExpressionContext):
         pass
 
-    # Exit a parse tree produced by projectParser#addSub.
-    def exitAddSub(self, ctx:projectParser.AddSubContext):
+    # Exit a parse tree produced by projectParser#comparisonExpression.
+    def exitComparisonExpression(self, ctx:projectParser.ComparisonExpressionContext):
         pass
 
 
@@ -116,12 +125,12 @@ class projectListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by projectParser#mulDiv.
-    def enterMulDiv(self, ctx:projectParser.MulDivContext):
+    # Enter a parse tree produced by projectParser#string_literal.
+    def enterString_literal(self, ctx:projectParser.String_literalContext):
         pass
 
-    # Exit a parse tree produced by projectParser#mulDiv.
-    def exitMulDiv(self, ctx:projectParser.MulDivContext):
+    # Exit a parse tree produced by projectParser#string_literal.
+    def exitString_literal(self, ctx:projectParser.String_literalContext):
         pass
 
 
@@ -143,30 +152,12 @@ class projectListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by projectParser#stringLiteral.
-    def enterStringLiteral(self, ctx:projectParser.StringLiteralContext):
-        pass
-
-    # Exit a parse tree produced by projectParser#stringLiteral.
-    def exitStringLiteral(self, ctx:projectParser.StringLiteralContext):
-        pass
-
-
     # Enter a parse tree produced by projectParser#and.
     def enterAnd(self, ctx:projectParser.AndContext):
         pass
 
     # Exit a parse tree produced by projectParser#and.
     def exitAnd(self, ctx:projectParser.AndContext):
-        pass
-
-
-    # Enter a parse tree produced by projectParser#relationaloperations.
-    def enterRelationaloperations(self, ctx:projectParser.RelationaloperationsContext):
-        pass
-
-    # Exit a parse tree produced by projectParser#relationaloperations.
-    def exitRelationaloperations(self, ctx:projectParser.RelationaloperationsContext):
         pass
 
 
@@ -179,12 +170,12 @@ class projectListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by projectParser#readCommand.
-    def enterReadCommand(self, ctx:projectParser.ReadCommandContext):
+    # Enter a parse tree produced by projectParser#negative_unary.
+    def enterNegative_unary(self, ctx:projectParser.Negative_unaryContext):
         pass
 
-    # Exit a parse tree produced by projectParser#readCommand.
-    def exitReadCommand(self, ctx:projectParser.ReadCommandContext):
+    # Exit a parse tree produced by projectParser#negative_unary.
+    def exitNegative_unary(self, ctx:projectParser.Negative_unaryContext):
         pass
 
 
@@ -194,6 +185,15 @@ class projectListener(ParseTreeListener):
 
     # Exit a parse tree produced by projectParser#writeCommand.
     def exitWriteCommand(self, ctx:projectParser.WriteCommandContext):
+        pass
+
+
+    # Enter a parse tree produced by projectParser#readCommand.
+    def enterReadCommand(self, ctx:projectParser.ReadCommandContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#readCommand.
+    def exitReadCommand(self, ctx:projectParser.ReadCommandContext):
         pass
 
 
@@ -248,15 +248,6 @@ class projectListener(ParseTreeListener):
 
     # Exit a parse tree produced by projectParser#variableDeclaration.
     def exitVariableDeclaration(self, ctx:projectParser.VariableDeclarationContext):
-        pass
-
-
-    # Enter a parse tree produced by projectParser#relationalOperations.
-    def enterRelationalOperations(self, ctx:projectParser.RelationalOperationsContext):
-        pass
-
-    # Exit a parse tree produced by projectParser#relationalOperations.
-    def exitRelationalOperations(self, ctx:projectParser.RelationalOperationsContext):
         pass
 
 

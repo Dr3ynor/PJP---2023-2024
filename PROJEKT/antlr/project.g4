@@ -1,61 +1,93 @@
 grammar project;
 
-program: statement* EOF;
+program: statement+ EOF;
 
-statement: emptyCommand=';'
-         | variableDeclaration
-         | writeCommand
-         | assignment
-         | readCommand
-         | conditionWithoutBrackets
-         | condition
-         | loop
-         | expression ';'
-         | whileLoop
-         | block
-         ;
-block: '{' statement* '}';
-whileLoop: '[' statement* ']';
+statement:
+	emptyCommand = ';'
+	| variableDeclaration
+	| writeCommand
+	| assignment
+	| readCommand
+	| conditionWithoutBrackets
+	| condition
+	| loop
+	| forLoop
+	| expression ';'
+	| block;
+
+block: '{' statementList '}';
+statementList: statement (statement)*;
 
 expression:
-    expression '-' expression                                       #sub
-    | expression '+' expression                                     #add
-    |INT                                                            #int
-    | FLOAT                                                         #float
-    | BOOLEAN                                                       #boolean
-    | '!' expression                                                #not
-    | '-' expression                                                #negative_unary
-    | STRING_LITERAL                                                #string_literal
-    | ID                                                            #id
-    | expression ('*' | '/' | '%') expression                       #mul
-    | expression ('&&') expression                                  #and
-    | expression ('||') expression                                  #or
-    | expression ('.') expression                                   #concat
-    | expression ('==' | '!=' | '<' | '<=' | '>' | '>=') expression #comparisonExpression
-    | '(' expression ')'                                            #parenthesis
-    ;
+	INT													# int
+	| FLOAT												# float
+	| BOOLEAN											# boolean
+	| op = NOT expression								# not
+	| op = SUB expression								# negativeUnary
+	| STRING_LITERAL									# stringLiteral
+	| ID												# id
+	| expression op = (MUL | DIV) expression			# mulDiv
+	| expression op = (ADD | SUB) expression			# addSub
+	| expression op = MOD expression					# mod
+	| expression op = AND expression					# and
+	| expression op = OR expression						# or
+	| expression op = DOT expression					# concat
+	| expression op = relationalOperations expression	# relationaloperations
+	| '(' expression ')'								# parenthesis;
 
-writeCommand: 'write' expression (',' expression)* ';';
-readCommand: 'read' ID (',' ID)* ';';
+readCommand: 'read' expression (',' expression)* ';';
 
-//assignment: ID (ASSIGN expression)* ';';
-assignment : ID ('=' ID)* '=' expression ;
-//assignment: (ID ASSIGN)+ expression ';';
+writeCommand: 'write' STRING_LITERAL (',' expression)* ';';
 
+assignment: ID ('=' ID)* '=' expression;
 
-condition: 'if' '(' expression ')' '{' statement* '}' ('else' statement)?;
-conditionWithoutBrackets: 'if' '(' expression ')' statement ('else' statement)?;
+condition:
+	'if' '(' expression ')' '{' statement* '}' ('else' statement)?;
+
+conditionWithoutBrackets:
+	'if' '(' expression ')' statement ('else' statement)?;
 
 loop: 'while' '(' expression ')' '{' statement* '}';
 
-variableDeclaration: TYPE_IDENTIFIER ID ((',' ID)+)? (ASSIGN expression)? ';';
+forLoop:
+	'for' '(' assignment ';' expression ';' assignment ')' '{' statement* '}';
 
+variableDeclaration:
+	TYPE_IDENTIFIER ID ((',' ID)+)? (ASSIGN expression)? ';';
+
+relationalOperations:
+	EQUAL
+	| NOT_EQUAL
+	| LESS
+	| GREATER
+	| LESS_EQUAL
+	| GREATER_EQUAL;
+
+SEMICOLON: ';';
+COMMA: ',';
+DOT: '.';
+MUL: '*';
+DIV: '/';
+MOD: '%';
+ADD: '+';
+SUB: '-';
+
+EQUAL: '==';
+NOT_EQUAL: '!=';
+LESS: '<';
+GREATER: '>';
+LESS_EQUAL: '<=';
+GREATER_EQUAL: '>=';
+
+NOT: '!';
+AND: '&&';
+OR: '||';
 
 TYPE_IDENTIFIER: ('int' | 'float' | 'bool' | 'string');
 
 INT: ([0-9]+);
 
-FLOAT: [0-9]+ '.'[0-9]+;
+FLOAT: [0-9]+ '.' [0-9]+;
 
 BOOLEAN: ('true' | 'false');
 

@@ -2,16 +2,16 @@ from antlr.projectListener import projectListener
 from antlr.projectParser import projectParser
 from antlr.projectLexer import projectLexer
 
-from VerboseErrorListener import VerboseErrorListener
+# from VerboseErrorListener import VerboseErrorListener
 
 from antlr4 import *
 
-
+#TODO: test if, for and while loops typechecking | edit check for keywords (?)
 class Listener(projectListener):
     def __init__(self):
         super().__init__()
         self.blocks = [{}]
-        self.error_listener = VerboseErrorListener()
+        # self.error_listener = VerboseErrorListener()
         self.errors = []
         self.values = {}
         self.keywords = ['write', 'read', 'if', 'else', 'while', 'for', 'int', 'float', 'bool', 'string', 'true', 'false']
@@ -82,47 +82,34 @@ class Listener(projectListener):
                 if value_type != "bool":
                     self.errors.append(f"Not requires bool, but got {value_type}")
                 rule = "bool"
-            case projectParser.AndContext:
+            case projectParser.AndContext | projectParser.OrContext:
                 left_type = self.getRuleType(ctx.expression(0))
                 right_type = self.getRuleType(ctx.expression(1))
                 if left_type != "bool" or right_type != "bool":
                     self.errors.append(f"And requires bool, but got {left_type} And {right_type}")
                 rule = "bool"
 
-            case projectParser.OrContext:
+            case projectParser.EqualContext | projectParser.NotEqualContext:
                 left_type = self.getRuleType(ctx.expression(0))
                 right_type = self.getRuleType(ctx.expression(1))
 
-                if left_type != "bool" or right_type != "bool":
-                    self.errors.append(f"Or requires bool, but got {left_type} Or {right_type}")
+                if left_type not in ["int", "float", "string"] or right_type not in ["int", "float", "string"]:
+                    self.errors.append(f"== requires int,float,string, but got {left_type} | {right_type}")
+
+                if left_type != right_type:
+                    self.errors.append(f"== requires same type, but got {left_type} | {right_type}")
                 rule = "bool"
 
-            case projectParser.RelationalOperationsContext:
-                left_type = self.getRuleType(ctx.expression(0))
-                right_type = self.getRuleType(ctx.expression(1))
-                operator = ctx.getText()
-                match operator:
-                    case "==":
-                        if left_type not in ["int", "float", "string"] or right_type not in ["int", "float", "string"]:
-                            self.errors.append(f"Error: == requires int,float,string, but got {left_type} == {right_type} | exitRelationalOperations")
-                        if left_type != right_type:
-                            self.errors.append(f"Error: == requires int,float,string, but got {left_type} == {right_type} | exitRelationalOperations")
-                    case "!=":
-                        if left_type not in ["int", "float", "string"] or right_type not in ["int", "float", "string"]:
-                            self.errors.append(f"Error: != requires int,float,string, but got {left_type} != {right_type} | exitRelationalOperations")
-                    case ">":
-                        if left_type not in self.numbers or right_type not in self.numbers:
-                            self.errors.append(f"Error: > requires int,float type, but got {left_type} > {right_type} | exitRelationalOperations")
-                    case "<":
-                        if left_type not in self.numbers or right_type not in self.numbers:
-                            self.errors.append(f"Error: < requires int,float type, but got {left_type} < {right_type} | exitRelationalOperations")
-                    case ">=":
-                        if left_type not in self.numbers or right_type not in self.numbers:
-                            self.errors.append(f"Error: >= requires int,float type, but got {left_type} >= {right_type} | exitRelationalOperations")
-                    case "<=":
-                        if left_type not in self.numbers or right_type not in self.numbers:
-                            self.errors.append(f"Error: <= requires int,float type, but got {left_type} <= {right_type} | exitRelationalOperations")
+            case projectParser.LessContext |projectParser.GreaterContext | projectParser.GreaterEqualContext  | projectParser.LessEqualContext:
+                left_type =  self.getRuleType(ctx.expression(0)) #ctx.getChild(1).getText()
+                right_type = self.getRuleType(ctx.expression(1)) #ctx.getChild(2).getText()
+                print(f"LEFT EXP:{left_type}")
+                print(f"RIGHT EXP:{right_type}")
+                if left_type not in self.numbers or right_type not in self.numbers:
+                    self.errors.append(f"Error: > requires int,float type, but got {left_type} | {right_type} | exitRelationalOperations")
+
                 rule = "bool"
+
             case projectParser.ParenthesisContext:
                 rule = self.getRuleType(ctx.expression())
         
@@ -132,6 +119,9 @@ class Listener(projectListener):
         for i in range(len(ctx.ID())):
             name = ctx.ID(i)
             data_type = ctx.TYPE_IDENTIFIER()
+
+            if str(name) in self.keywords:
+                self.errors.append(f"Error: Variable {name} is a keyword | exitVariableDeclaration")
 
             if str(name) in self.getAllBlocks():
                 self.errors.append(f"Error: Variable {name} already declared | exitVariableDeclaration")
@@ -148,7 +138,6 @@ class Listener(projectListener):
                     case _:
                         self.errors.append(f"Error: Unknown data type {data_type.getText()} | exitVariableDeclaration")
 
-    # TODO: PROBLEM HERE!
     def exitAssignment(self, ctx: projectParser.AssignmentContext):
         name = ctx.ID()
         expression = None
@@ -163,24 +152,43 @@ class Listener(projectListener):
 
         value = expression
         data_type = self.getRuleType(value)
+
+        if "stringliteral" in str(data_type).lower():
+            data_type = "string"
+        print(f"Data Type: {data_type}")
+
+
         block = self.getBlockWithKey(str(name))
         if block is None:
             self.errors.append(f"Error: Variable {name} not declared | exitAssignment")
             return
         declaration_type = block[str(name)][0]
-        
-        if data_type == declaration_type:
-            #conversion
+        print("Declaration Type: ", declaration_type)
+
+
+        if data_type != declaration_type:
+            #conversion int to float
             if data_type == "int" and declaration_type == "float":
                 data_type = "float"
             else:
                 self.errors.append(f"Error: Variable {name} is {declaration_type}, but got {data_type} | exitAssignment")
 
+
+            """
+            #conversion
+            if data_type == "float" and declaration_type == "int":
+                data_type = "int"
+            elif data_type == "int" and declaration_type == "int":
+                data_type = "int"
+            else:
+                self.errors.append(f"Error: Variable {name} is {declaration_type}, but got {data_type} | exitAssignment")
+            """
         if str(value.getText()).isdecimal() and declaration_type == "float":
             block[str(name)] = (str(declaration_type),float(value.getText()))
         else:
-            block[str(name)] = (str(declaration_type),value.getText())
-
+            block[str(name)] = (str(declaration_type),value.getText())        
+        
+        
     def exitConcat(self, ctx: projectParser.ConcatContext):
         left_value = ctx.expression(0)
         right_value = ctx.expression(1)
@@ -211,7 +219,7 @@ class Listener(projectListener):
             self.errors.append(f"Error: Condition requires bool, but got {data_type} | exitCondition")
 
     def exitForLoop(self, ctx: projectParser.ForLoopContext):
-        data_type2 = self.getRuleType(ctx.expression(1))
+        data_type2 = self.getRuleType(ctx.expression(0))
         if data_type2 != "bool":
             self.errors.append(f"Error: For Loop requires bool, but got {data_type2} | exitForLoop")
 
@@ -223,5 +231,6 @@ class Listener(projectListener):
         print("Program Entered")
 
     def exitProgram(self, ctx: projectParser.ProgramContext):
+        print(self.blocks)
         print("Program Exited")
         

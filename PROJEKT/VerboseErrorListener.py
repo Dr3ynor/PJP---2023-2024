@@ -5,11 +5,11 @@ class VerboseErrorListener(error.ErrorListener.ErrorListener):
         super().__init__()
         self.errors = []
 
-    #def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
-        #self.errors.append(f"Line {line}:{column} {msg}")
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        self.errors.append(f"Line {line}:{column} {msg}")
     
-    def syntaxError(self,msg):
-        self.errors.append(msg)
+    def customSyntaxError(self,msg):
+       self.errors.append(msg)
 
     """
     def syntaxError(self, recognizer, offendingSymbol, line, charPositionInLine, msg, e):

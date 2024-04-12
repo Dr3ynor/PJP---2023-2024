@@ -8,7 +8,8 @@ from VerboseErrorListener import VerboseErrorListener
 from Listener import Listener
 
 def main():
-    with open('inputs/PLC_t4.in', 'r') as file:
+    with open('inputs/PLC_errors.in', 'r') as file:
+    #with open('inputs/PLC_t3.in', 'r') as file:
         data = file.read()
     input_stream = InputStream(data)
     lexer = projectLexer(input_stream)
@@ -16,8 +17,8 @@ def main():
     parser = projectParser(stream)
     
     error_listener = VerboseErrorListener()
-    parser.removeErrorListeners()  # Remove the default error listener
-    parser.addErrorListener(error_listener)  # Add the verbose error listener
+    parser.removeErrorListeners()
+    parser.addErrorListener(error_listener)
 
     tree = parser.program()
     if parser.getNumberOfSyntaxErrors() > 0:

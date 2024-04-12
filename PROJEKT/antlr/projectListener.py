@@ -62,12 +62,48 @@ class projectListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by projectParser#bool.
+    def enterBool(self, ctx:projectParser.BoolContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#bool.
+    def exitBool(self, ctx:projectParser.BoolContext):
+        pass
+
+
+    # Enter a parse tree produced by projectParser#string.
+    def enterString(self, ctx:projectParser.StringContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#string.
+    def exitString(self, ctx:projectParser.StringContext):
+        pass
+
+
+    # Enter a parse tree produced by projectParser#assignment.
+    def enterAssignment(self, ctx:projectParser.AssignmentContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#assignment.
+    def exitAssignment(self, ctx:projectParser.AssignmentContext):
+        pass
+
+
     # Enter a parse tree produced by projectParser#negativeUnary.
     def enterNegativeUnary(self, ctx:projectParser.NegativeUnaryContext):
         pass
 
     # Exit a parse tree produced by projectParser#negativeUnary.
     def exitNegativeUnary(self, ctx:projectParser.NegativeUnaryContext):
+        pass
+
+
+    # Enter a parse tree produced by projectParser#notEqual.
+    def enterNotEqual(self, ctx:projectParser.NotEqualContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#notEqual.
+    def exitNotEqual(self, ctx:projectParser.NotEqualContext):
         pass
 
 
@@ -86,6 +122,15 @@ class projectListener(ParseTreeListener):
 
     # Exit a parse tree produced by projectParser#concat.
     def exitConcat(self, ctx:projectParser.ConcatContext):
+        pass
+
+
+    # Enter a parse tree produced by projectParser#less.
+    def enterLess(self, ctx:projectParser.LessContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#less.
+    def exitLess(self, ctx:projectParser.LessContext):
         pass
 
 
@@ -125,30 +170,21 @@ class projectListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by projectParser#equal.
+    def enterEqual(self, ctx:projectParser.EqualContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#equal.
+    def exitEqual(self, ctx:projectParser.EqualContext):
+        pass
+
+
     # Enter a parse tree produced by projectParser#not.
     def enterNot(self, ctx:projectParser.NotContext):
         pass
 
     # Exit a parse tree produced by projectParser#not.
     def exitNot(self, ctx:projectParser.NotContext):
-        pass
-
-
-    # Enter a parse tree produced by projectParser#boolean.
-    def enterBoolean(self, ctx:projectParser.BooleanContext):
-        pass
-
-    # Exit a parse tree produced by projectParser#boolean.
-    def exitBoolean(self, ctx:projectParser.BooleanContext):
-        pass
-
-
-    # Enter a parse tree produced by projectParser#stringLiteral.
-    def enterStringLiteral(self, ctx:projectParser.StringLiteralContext):
-        pass
-
-    # Exit a parse tree produced by projectParser#stringLiteral.
-    def exitStringLiteral(self, ctx:projectParser.StringLiteralContext):
         pass
 
 
@@ -161,12 +197,12 @@ class projectListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by projectParser#relationaloperations.
-    def enterRelationaloperations(self, ctx:projectParser.RelationaloperationsContext):
+    # Enter a parse tree produced by projectParser#greaterEqual.
+    def enterGreaterEqual(self, ctx:projectParser.GreaterEqualContext):
         pass
 
-    # Exit a parse tree produced by projectParser#relationaloperations.
-    def exitRelationaloperations(self, ctx:projectParser.RelationaloperationsContext):
+    # Exit a parse tree produced by projectParser#greaterEqual.
+    def exitGreaterEqual(self, ctx:projectParser.GreaterEqualContext):
         pass
 
 
@@ -176,6 +212,24 @@ class projectListener(ParseTreeListener):
 
     # Exit a parse tree produced by projectParser#id.
     def exitId(self, ctx:projectParser.IdContext):
+        pass
+
+
+    # Enter a parse tree produced by projectParser#lessEqual.
+    def enterLessEqual(self, ctx:projectParser.LessEqualContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#lessEqual.
+    def exitLessEqual(self, ctx:projectParser.LessEqualContext):
+        pass
+
+
+    # Enter a parse tree produced by projectParser#greater.
+    def enterGreater(self, ctx:projectParser.GreaterContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#greater.
+    def exitGreater(self, ctx:projectParser.GreaterContext):
         pass
 
 
@@ -194,15 +248,6 @@ class projectListener(ParseTreeListener):
 
     # Exit a parse tree produced by projectParser#writeCommand.
     def exitWriteCommand(self, ctx:projectParser.WriteCommandContext):
-        pass
-
-
-    # Enter a parse tree produced by projectParser#assignment.
-    def enterAssignment(self, ctx:projectParser.AssignmentContext):
-        pass
-
-    # Exit a parse tree produced by projectParser#assignment.
-    def exitAssignment(self, ctx:projectParser.AssignmentContext):
         pass
 
 

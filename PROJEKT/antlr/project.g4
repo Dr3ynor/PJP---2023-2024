@@ -6,7 +6,7 @@ statement:
 	emptyCommand = ';'
 	| variableDeclaration
 	| writeCommand
-	| assignment
+	//| assignment
 	| readCommand
 	| conditionWithoutBrackets
 	| condition
@@ -21,10 +21,10 @@ statementList: statement (statement)*;
 expression:
 	INT													# int
 	| FLOAT												# float
-	| BOOLEAN											# boolean
+	| BOOL												# bool
 	| op = NOT expression								# not
 	| op = SUB expression								# negativeUnary
-	| STRING_LITERAL									# stringLiteral
+	| STRING_LITERAL									# string
 	| ID												# id
 	| expression op = (MUL | DIV) expression			# mulDiv
 	| expression op = (ADD | SUB) expression			# addSub
@@ -32,14 +32,21 @@ expression:
 	| expression op = AND expression					# and
 	| expression op = OR expression						# or
 	| expression op = DOT expression					# concat
-	| expression op = relationalOperations expression	# relationaloperations
-	| '(' expression ')'								# parenthesis;
+	//| expression op = relationalOperations expression	# relationaloperations
+	| '(' expression ')'								# parenthesis
+	| <assoc = right> ID op = '=' expression			# assignment
+	| expression EQUAL expression						# equal
+	| expression NOT_EQUAL expression					# notEqual
+	| expression LESS expression						# less
+	| expression GREATER expression						# greater
+	| expression LESS_EQUAL expression					# lessEqual
+	| expression GREATER_EQUAL expression				# greaterEqual;
 
 readCommand: 'read' expression (',' expression)* ';';
 
 writeCommand: 'write' STRING_LITERAL (',' expression)* ';';
 
-assignment: ID ('=' ID)* '=' expression;
+//assignment: ID '=' expression;
 
 condition:
 	'if' '(' expression ')' '{' statement* '}' ('else' statement)?;
@@ -50,10 +57,9 @@ conditionWithoutBrackets:
 loop: 'while' '(' expression ')' '{' statement* '}';
 
 forLoop:
-	'for' '(' assignment ';' expression ';' assignment ')' '{' statement* '}';
+	'for' '(' expression ';' expression ';' expression ')' '{' statement* '}';
 
-variableDeclaration:
-	TYPE_IDENTIFIER ID ((',' ID)+)? (ASSIGN expression)? ';';
+variableDeclaration: TYPE_IDENTIFIER ID (',' ID)* ';';
 
 relationalOperations:
 	EQUAL
@@ -89,14 +95,12 @@ INT: ([0-9]+);
 
 FLOAT: [0-9]+ '.' [0-9]+;
 
-BOOLEAN: ('true' | 'false');
+BOOL: ('true' | 'false');
 
 STRING_LITERAL: '"' .*? '"';
 
 ID: [a-zA-Z][a-zA-Z0-9]*;
 
 COMMENT: '//' ~[\r\n]* -> skip;
-
-ASSIGN: '=';
 
 WS: [ \t\r\n]+ -> skip;

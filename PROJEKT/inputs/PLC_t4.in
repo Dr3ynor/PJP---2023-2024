@@ -1,8 +1,1 @@
-int x;
-
-x=5;
-
-
-//condition:'if' '(' expression ')' '{' statement* '}' ('else' statement)?;
-//loop: 'while' '(' expression ')' '{' statement* '}';
-//forLoop:'for' '(' expression ';' expression ';' expression ')' '{' statement* '}';
+write "true or false and true (true):", true || false && true;

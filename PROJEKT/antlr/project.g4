@@ -20,6 +20,7 @@ statementList: statement (statement)*;
 
 expression:
 	INT											# int
+	| '(' expression ')'						# parenthesis
 	| FLOAT										# float
 	| BOOL										# bool
 	| op = NOT expression						# not
@@ -32,7 +33,6 @@ expression:
 	| expression op = AND expression			# and
 	| expression op = OR expression				# or
 	| expression op = DOT expression			# concat
-	| '(' expression ')'						# parenthesis
 	| <assoc = right> ID op = '=' expression	# assignment
 	| expression EQUAL expression				# equal
 	| expression NOT_EQUAL expression			# notEqual

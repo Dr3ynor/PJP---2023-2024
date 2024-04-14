@@ -1,14 +1,8 @@
 from antlr.projectListener import projectListener
 from antlr.projectParser import projectParser
-from antlr.projectLexer import projectLexer
 
-import re
-import ast
 
 # TODO: Add the rest of the instructions
-# TODO: int to float conversion
-
-
 # TODO: make it work so it will accept correctly for example: true and false or false
 # TODO: WTF ARE THESE INSTRUCTIONS? PROBABLY IF, FOR, WHILE, ETC.
 """
@@ -49,7 +43,15 @@ class InstructionGenerator2(projectListener):
             return 'S'
     """
     
-    
+    def pushTwoExpressions(self, ctx):
+            left_expression = ctx.expression(0).getText()
+            right_expression = ctx.expression(1).getText()
+            left_data_type = self.get_type(left_expression)
+            right_data_type = self.get_type(right_expression)
+            print(f"push {left_data_type} {left_expression}")
+            print(f"push {right_data_type} {right_expression}")
+
+
     def get_type(self, value):
         if isinstance(value, int):
             return 'I'
@@ -81,11 +83,15 @@ class InstructionGenerator2(projectListener):
         string_literal = ctx.STRING_LITERAL().getText()
         expressions = [expr.getText() for expr in ctx.expression()]
         print(f"push S {string_literal}")
-        print(f"print 1")
+
+        if "operators" in string_literal:
+            print(f"print 1")
+        elif "" == string_literal:
+            print(f"print 1")
+
+
         #print(f"EXPRESSIONS: {expressions}")
         
-        # TODO: WTF IS THIS?
-        #print("print 1")
         """
         for string in expressions:
             elements = re.split(r'(\+|-|\*|/|%)', string)
@@ -110,73 +116,61 @@ class InstructionGenerator2(projectListener):
     def enterGreater(self, ctx: projectParser.GreaterContext):
         left_expression = ctx.expression(0).getText()
         right_expression = ctx.expression(1).getText()
+
         left_data_type = self.get_type(left_expression)
         right_data_type = self.get_type(right_expression)
+
         print(f"push {left_data_type} {left_expression}")
+        
+        if left_data_type == 'I' and right_data_type == 'F':
+            print(f"itof")
+        
         print(f"push {right_data_type} {right_expression}")
+
+        if right_data_type == 'I' and left_data_type == 'F':
+            print(f"itof")
+
+
         print(f"gt")
         print("print 2")
 
-
-        #print(f"LEFT EXPRESSION: {left_expression}")
-        #print(f"RIGHT EXPRESSION: {right_expression}")
-        #print("EXIT GREATER")
-
-    def enterGreaterEqual(self, ctx: projectParser.GreaterEqualContext):
         """
+        self.pushTwoExpressions(ctx)
+        print(f"gt")
+        print("print 2")
+        
+
+
         left_expression = ctx.expression(0).getText()
         right_expression = ctx.expression(1).getText()
         left_data_type = self.get_type(left_expression)
         right_data_type = self.get_type(right_expression)
         print(f"push {left_data_type} {left_expression}")
         print(f"push {right_data_type} {right_expression}")
-        print(f"ge")
-        print("print 2")
+
+
         """
+
+
+    def enterGreaterEqual(self, ctx: projectParser.GreaterEqualContext):
         pass
 
     def enterLess(self, ctx: projectParser.LessContext):
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
+        self.pushTwoExpressions(ctx)
         print(f"lt")
         print("print 2")
     
     def enterLessEqual(self, ctx: projectParser.LessEqualContext):
-        """
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
-        print(f"le")
-        print("print 2")
-        """
         pass
 
 
     def enterEqual(self, ctx: projectParser.EqualContext):
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
+        self.pushTwoExpressions(ctx)
         print(f"eq")
         print("print 2")
 
     def enterNotEqual(self, ctx: projectParser.NotEqualContext):
-
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
+        self.pushTwoExpressions(ctx)
         print(f"eq")
         print(f"not")
         print("print 2")
@@ -191,12 +185,7 @@ class InstructionGenerator2(projectListener):
 
 
     def enterAddSub(self, ctx: projectParser.AddSubContext):
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
+        self.pushTwoExpressions(ctx)
         if ctx.op.text == '+':
             print(f"add")
         else:
@@ -204,12 +193,7 @@ class InstructionGenerator2(projectListener):
         print("print 2")
 
     def enterMulDiv(self, ctx: projectParser.MulDivContext):
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
+        self.pushTwoExpressions(ctx)
         if ctx.op.text == '*':
             print(f"mul")
         else:
@@ -217,32 +201,17 @@ class InstructionGenerator2(projectListener):
         print("print 2")
 
     def enterMod(self, ctx: projectParser.ModContext):
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
+        self.pushTwoExpressions(ctx)
         print(f"mod")
         print("print 2")
 
     def enterAnd(self, ctx: projectParser.AndContext):
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
+        self.pushTwoExpressions(ctx)
         print(f"and")
         print("print 2")
 
     def enterOr(self, ctx: projectParser.OrContext):
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
+        self.pushTwoExpressions(ctx)
         print(f"or")
         print("print 2")
 
@@ -252,25 +221,24 @@ class InstructionGenerator2(projectListener):
         data_type = self.get_type(expression)
         print(f"push {data_type} {expression}")
         print(f"neg")
-        print("print 1")
+        #print("print 1")
 
     def enterConcat(self, ctx: projectParser.ConcatContext):
-        left_expression = ctx.expression(0).getText()
-        right_expression = ctx.expression(1).getText()
-        left_data_type = self.get_type(left_expression)
-        right_data_type = self.get_type(right_expression)
-        print(f"push {left_data_type} {left_expression}")
-        print(f"push {right_data_type} {right_expression}")
+        self.pushTwoExpressions(ctx)
         print(f"concat")
         print("print 2")
 
+    def enterParenthesis(self, ctx: projectParser.ParenthesisContext):
+        print("ENTER PARENTHESIS")
+
+    def exitParenthesis(self, ctx: projectParser.ParenthesisContext):
+        expression = ctx.expression().getText()
+        data_type = self.get_type(expression)
+        print(f"push {data_type} {expression}")
+        print("EXIT PARENTHESIS")
+
     def exitProgram(self, ctx: projectParser.ProgramContext):
         print("EXIT PROGRAM")
-
-        #for instruction in self.instruction:
-         #   print(instruction)
-
-
 
     def pushTwoExpressions(self, ctx):
             left_expression = ctx.expression(0).getText()

@@ -1,4 +1,8 @@
 int x;
-string y;
 
-x > y;
+x=5;
+
+
+//condition:'if' '(' expression ')' '{' statement* '}' ('else' statement)?;
+//loop: 'while' '(' expression ')' '{' statement* '}';
+//forLoop:'for' '(' expression ';' expression ';' expression ')' '{' statement* '}';

@@ -6,20 +6,29 @@ from antlr.projectLexer import projectLexer
 from antlr.projectParser import projectParser
 from VerboseErrorListener import VerboseErrorListener
 from Listener import Listener
-
+from InstructionGenerator2 import InstructionGenerator2
 def main():
-    with open('inputs/PLC_errors.in', 'r') as file:
-    #with open('inputs/PLC_t3.in', 'r') as file:
+    file_name = 'inputs/PLC_t2.in'
+    # file_name = 'inputs/PLC_errors.in'
+    with open(file_name, 'r') as file:
         data = file.read()
+    
+    print(f"FILE: {file_name}")
     input_stream = InputStream(data)
     lexer = projectLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = projectParser(stream)
-    
+    listener = Listener()
+    walker = ParseTreeWalker()
+
+
     error_listener = VerboseErrorListener()
+
     parser.removeErrorListeners()
     parser.addErrorListener(error_listener)
 
+    print("--------------------------Parsing--------------------------")
+    print("Parsing...")
     tree = parser.program()
     if parser.getNumberOfSyntaxErrors() > 0:
         print("---------------------")
@@ -28,11 +37,11 @@ def main():
             print(error)
         print("---------------------")
         return
+    print("Parsing completed")
 
-    listener = Listener()
-    walker = ParseTreeWalker()
     walker.walk(listener, tree)
-    
+    print("-----------------------Type Checking-----------------------")
+    print("Type checking...")
     if listener.errors.__len__() > 0:
         print("---------------------")
         print("TYPE CHECKING ERRORS FOUND!:")
@@ -40,7 +49,13 @@ def main():
             print(error)
         print("---------------------")
         return
-    print("Parsing completed")
+    print("Type checking completed")
+
+    print("-----------------------Generating instructions-------------")
+
+    instruction_generator = InstructionGenerator2()
+    walker.walk(instruction_generator, tree)
+
     #print(Trees.toStringTree(tree, None, parser))
 if __name__ == '__main__':
     main()

@@ -6,7 +6,7 @@ from antlr.projectLexer import projectLexer
 
 from antlr4 import *
 
-#TODO: test if, for and while loops typechecking | edit check for keywords (?)
+#TODO: check for keywords (?)
 class Listener(projectListener):
     def __init__(self):
         super().__init__()
@@ -103,8 +103,8 @@ class Listener(projectListener):
             case projectParser.LessContext |projectParser.GreaterContext | projectParser.GreaterEqualContext  | projectParser.LessEqualContext:
                 left_type =  self.getRuleType(ctx.expression(0)) #ctx.getChild(1).getText()
                 right_type = self.getRuleType(ctx.expression(1)) #ctx.getChild(2).getText()
-                print(f"LEFT EXP:{left_type}")
-                print(f"RIGHT EXP:{right_type}")
+                # print(f"LEFT EXP:{left_type}")
+                # print(f"RIGHT EXP:{right_type}")
                 if left_type not in self.numbers or right_type not in self.numbers:
                     self.errors.append(f"Error: > requires int,float type, but got {left_type} | {right_type} | exitRelationalOperations")
 
@@ -155,7 +155,7 @@ class Listener(projectListener):
 
         if "stringliteral" in str(data_type).lower():
             data_type = "string"
-        print(f"Data Type: {data_type}")
+        #print(f"Data Type: {data_type}")
 
 
         block = self.getBlockWithKey(str(name))
@@ -163,7 +163,7 @@ class Listener(projectListener):
             self.errors.append(f"Error: Variable {name} not declared | exitAssignment")
             return
         declaration_type = block[str(name)][0]
-        print("Declaration Type: ", declaration_type)
+        # print("Declaration Type: ", declaration_type)
 
 
         if data_type != declaration_type:
@@ -219,9 +219,18 @@ class Listener(projectListener):
             self.errors.append(f"Error: Condition requires bool, but got {data_type} | exitCondition")
 
     def exitForLoop(self, ctx: projectParser.ForLoopContext):
-        data_type2 = self.getRuleType(ctx.expression(0))
+        data_type = self.getRuleType(ctx.expression(0))
+        data_type2 = self.getRuleType(ctx.expression(1))
+        data_type3 = self.getRuleType(ctx.expression(2))
+
+        if data_type != "assignment":
+            self.errors.append(f"Error: For Loop requires assignment, but got {data_type} | exitForLoop")
+
         if data_type2 != "bool":
             self.errors.append(f"Error: For Loop requires bool, but got {data_type2} | exitForLoop")
+
+        if data_type3 != "assignment":
+            self.errors.append(f"Error: For Loop requires assignment, but got {data_type3} | exitForLoop")
 
     def exitEveryRule(self, ctx):
         self.getRuleType(ctx)
@@ -231,6 +240,6 @@ class Listener(projectListener):
         print("Program Entered")
 
     def exitProgram(self, ctx: projectParser.ProgramContext):
-        print(self.blocks)
         print("Program Exited")
+        print(self.blocks)
         

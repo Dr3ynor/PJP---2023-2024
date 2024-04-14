@@ -19,28 +19,27 @@ block: '{' statementList '}';
 statementList: statement (statement)*;
 
 expression:
-	INT													# int
-	| FLOAT												# float
-	| BOOL												# bool
-	| op = NOT expression								# not
-	| op = SUB expression								# negativeUnary
-	| STRING_LITERAL									# string
-	| ID												# id
-	| expression op = (MUL | DIV) expression			# mulDiv
-	| expression op = (ADD | SUB) expression			# addSub
-	| expression op = MOD expression					# mod
-	| expression op = AND expression					# and
-	| expression op = OR expression						# or
-	| expression op = DOT expression					# concat
-	//| expression op = relationalOperations expression	# relationaloperations
-	| '(' expression ')'								# parenthesis
-	| <assoc = right> ID op = '=' expression			# assignment
-	| expression EQUAL expression						# equal
-	| expression NOT_EQUAL expression					# notEqual
-	| expression LESS expression						# less
-	| expression GREATER expression						# greater
-	| expression LESS_EQUAL expression					# lessEqual
-	| expression GREATER_EQUAL expression				# greaterEqual;
+	INT											# int
+	| FLOAT										# float
+	| BOOL										# bool
+	| op = NOT expression						# not
+	| op = SUB expression						# negativeUnary
+	| STRING_LITERAL							# string
+	| ID										# id
+	| expression op = (MUL | DIV) expression	# mulDiv
+	| expression op = (ADD | SUB) expression	# addSub
+	| expression op = MOD expression			# mod
+	| expression op = AND expression			# and
+	| expression op = OR expression				# or
+	| expression op = DOT expression			# concat
+	| '(' expression ')'						# parenthesis
+	| <assoc = right> ID op = '=' expression	# assignment
+	| expression EQUAL expression				# equal
+	| expression NOT_EQUAL expression			# notEqual
+	| expression LESS expression				# less
+	| expression GREATER expression				# greater
+	| expression LESS_EQUAL expression			# lessEqual
+	| expression GREATER_EQUAL expression		# greaterEqual;
 
 readCommand: 'read' expression (',' expression)* ';';
 

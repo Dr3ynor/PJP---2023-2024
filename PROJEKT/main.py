@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from antlr4 import InputStream, CommonTokenStream, ParseTreeWalker, InputStream
-from antlr4.tree.Trees import Trees
+#from antlr4.tree.Trees import Trees
 
 from antlr.projectLexer import projectLexer
 from antlr.projectParser import projectParser
@@ -8,8 +8,8 @@ from VerboseErrorListener import VerboseErrorListener
 from Listener import Listener
 from InstructionGenerator2 import InstructionGenerator2
 def main():
-    file_name = 'inputs/PLC_t4.in'
-    # file_name = 'inputs/PLC_errors.in'
+    file_name = 'inputs/PLC_t1.in'
+    #file_name = 'inputs/PLC_errors.in'
     with open(file_name, 'r') as file:
         data = file.read()
     
@@ -39,6 +39,9 @@ def main():
         return
     print("Parsing completed")
 
+    
+    
+
     walker.walk(listener, tree)
     print("-----------------------Type Checking-----------------------")
     print("Type checking...")
@@ -52,6 +55,8 @@ def main():
     print("Type checking completed")
 
     print("-----------------------Generating instructions-------------")
+
+
 
     instruction_generator = InstructionGenerator2()
     walker.walk(instruction_generator, tree)

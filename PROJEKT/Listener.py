@@ -41,6 +41,7 @@ class Listener(projectListener):
 
         match type(ctx):
             case projectParser.IdContext:
+                #rule = self.getAllBlocks()[ctx.getText()]
                 rule = self.getAllBlocks()[ctx.getText()][0]
             
             case projectParser.AddSubContext:
@@ -173,16 +174,6 @@ class Listener(projectListener):
             else:
                 self.errors.append(f"Error: Variable {name} is {declaration_type}, but got {data_type} | exitAssignment")
 
-
-            """
-            #conversion
-            if data_type == "float" and declaration_type == "int":
-                data_type = "int"
-            elif data_type == "int" and declaration_type == "int":
-                data_type = "int"
-            else:
-                self.errors.append(f"Error: Variable {name} is {declaration_type}, but got {data_type} | exitAssignment")
-            """
         if str(value.getText()).isdecimal() and declaration_type == "float":
             block[str(name)] = (str(declaration_type),float(value.getText()))
         else:
@@ -216,7 +207,7 @@ class Listener(projectListener):
         value = ctx.expression()
         data_type =self.getRuleType(value)
         if data_type != "bool":
-            self.errors.append(f"Error: Condition requires bool, but got {data_type} | exitCondition")
+            self.errors.append(f"Error: Condition requires bool, but got {data_type} | exitConditionWithoutBrackets")
 
     def exitForLoop(self, ctx: projectParser.ForLoopContext):
         data_type = self.getRuleType(ctx.expression(0))

@@ -46,17 +46,19 @@ readCommand: 'read' expression (',' expression)* ';';
 writeCommand: 'write' STRING_LITERAL (',' expression)* ';';
 
 //assignment: ID '=' expression;
-
+elseStatement: 'else' statement;
 condition:
-	'if' '(' expression ')' '{' statement* '}' ('else' statement)?;
+	'if' '(' expression RPar '{' statement* '}' (elseStatement)?;
 
 conditionWithoutBrackets:
-	'if' '(' expression ')' statement ('else' statement)?;
+	'if' '(' expression ')' statement (elseStatement statement)?;
 
-loop: 'while' '(' expression ')' '{' statement* '}';
+loop: 'while' '(' expression RPar '{' statement* '}';
 
 forLoop:
 	'for' '(' expression ';' expression ';' expression ')' '{' statement* '}';
+
+RPar: ')';
 
 variableDeclaration: TYPE_IDENTIFIER ID (',' ID)* ';';
 

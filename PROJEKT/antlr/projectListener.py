@@ -251,6 +251,15 @@ class projectListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by projectParser#elseStatement.
+    def enterElseStatement(self, ctx:projectParser.ElseStatementContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#elseStatement.
+    def exitElseStatement(self, ctx:projectParser.ElseStatementContext):
+        pass
+
+
     # Enter a parse tree produced by projectParser#condition.
     def enterCondition(self, ctx:projectParser.ConditionContext):
         pass

@@ -39,7 +39,8 @@ expression:
 	| expression LESS expression				# less
 	| expression GREATER expression				# greater
 	| expression LESS_EQUAL expression			# lessEqual
-	| expression GREATER_EQUAL expression		# greaterEqual;
+	| expression GREATER_EQUAL expression		# greaterEqual
+	| RPar										# rPar;
 
 readCommand: 'read' expression (',' expression)* ';';
 

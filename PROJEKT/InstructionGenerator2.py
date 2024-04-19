@@ -5,6 +5,11 @@ from antlr4 import *
 class InstructionGenerator2(projectListener):
     def __init__(self):
         self.itof = False
+
+        self.itof_left = False
+        self.itof_right = False
+
+        self.same_type = ""
         self.blocks = [{}]
         self.index = 0
     # Done
@@ -23,11 +28,13 @@ class InstructionGenerator2(projectListener):
         right_data_type = self.get_type(right_expression)
         
         if left_data_type == 'I' and right_data_type == 'F':
-            self.itof = True
+            self.itof_left = True
+            # self.itof = True
         
 
         if right_data_type == 'I' and left_data_type == 'F':
-            self.itof = True
+            self.itof_right = True
+            # self.itof = True
 
     # Done
     def getRuleType(self, ctx:ParserRuleContext):
@@ -169,27 +176,102 @@ class InstructionGenerator2(projectListener):
         print(f"push S {string_literal}")
 
 
-    # Done
-    def exitAddSub(self, ctx: projectParser.AddSubContext):
-        if ctx.op.text == '+':
-            print(f"add")
-        else:
-            print(f"sub")
 
     # Done
     def enterAddSub(self, ctx: projectParser.AddSubContext):
         left_type = self.getRuleType(ctx.expression(0))
         right_type = self.getRuleType(ctx.expression(1))
 
-        if(left_type == "int" and right_type == "float") or (left_type == "float" and right_type == "int"):
-            self.itof = True
+        # print(f"left_type: {left_type}")
+        # print(f"right_type: {right_type}")
+
+        if (left_type == "float" and right_type == "float"):
+            self.same_type = "bothFloat"
+
+        if(left_type == "int" and right_type == "int"):
+            self.same_type = "bothInt"
+
+        #if(left_type == "int" and right_type == "float") or (left_type == "float" and right_type == "int"):
+            # self.itof = True
+        
+
+        if(left_type == "int" and right_type == "float"):
+            self.itof_left = True
+        if(left_type == "float" and right_type == "int"):
+            self.itof_right = True
+
+    # Done
+    def exitAddSub(self, ctx: projectParser.AddSubContext):
+        left_type = self.getRuleType(ctx.expression(0))
+        right_type = self.getRuleType(ctx.expression(1))
+        print(f"left_type: {left_type}")
+        print(f"right_type: {right_type}")
+
+
+        #print(f"are both the same? {self.same_type}")
+        if ctx.op.text == '+' and self.same_type == "bothFloat":
+            print(f"add F")
+            self.same_type = ""
+        elif ctx.op.text == '-' and self.same_type == "bothFloat":
+            print(f"sub F")
+            self.same_type = ""
+        elif ctx.op.text == '+' and self.same_type == "bothInt":
+            print(f"add I")
+            self.same_type = ""
+        elif ctx.op.text == '-' and self.same_type == "bothInt":
+            print(f"sub I")
+            self.same_type = ""
+        elif ctx.op.text == '+':
+            print(f"add F")
+            self.same_type = ""
+        elif ctx.op.text == '-':
+            print(f"sub F")
+            self.same_type = ""
+
+
+    # Done
+    def enterMulDiv(self, ctx: projectParser.MulDivContext):
+        left = self.getRuleType(ctx.expression(0))
+        right = self.getRuleType(ctx.expression(1))
+
+        if (left == "float" == right == "float"):
+            self.same_type = "bothFloat"
+
+        if(left == "int" and right == "int"):
+            self.same_type = "bothInt"
+
+        #if(left == "int" and right == "float") or (left == "float" and right == "int"):
+            # self.itof = True
+        
+
+        if(left == "int" and right == "float"):
+            self.itof_left = True
+        if(left == "float" and right == "int"):
+            self.itof_right = True
 
     # Done
     def exitMulDiv(self, ctx: projectParser.MulDivContext):
-        if ctx.op.text == '*':
-            print(f"mul")
-        else:
-            print(f"div")
+        if ctx.op.text == '*' and self.same_type == "bothFloat":
+            print(f"mul F")
+            self.same_type = ""
+        elif ctx.op.text == '/' and self.same_type == "bothFloat":
+            print(f"div F")
+            self.same_type = ""
+        elif ctx.op.text == '*' and self.same_type == "bothInt":
+            print(f"mul I")
+            self.same_type = ""
+        elif ctx.op.text == '/' and self.same_type == "bothInt":
+            print(f"div I")
+            self.same_type = ""
+        elif ctx.op.text == '*':
+            print(f"mul F")
+            self.same_type = ""
+        elif ctx.op.text == '/':
+            print(f"div F")
+            self.same_type = ""
+
+
+
     # Done
     def exitMod(self, ctx: projectParser.ModContext):
         print(f"mod")
@@ -203,6 +285,9 @@ class InstructionGenerator2(projectListener):
     # Done
     def exitConcat(self, ctx: projectParser.ConcatContext):
         print(f"concat")
+
+    def enterProgram(self, ctx: projectParser.ProgramContext):
+        print("START PROGRAM")
 
     def exitProgram(self, ctx: projectParser.ProgramContext):
         print("EXIT PROGRAM")
@@ -235,6 +320,16 @@ class InstructionGenerator2(projectListener):
     # Done
     def exitInt(self, ctx: projectParser.IntContext):
         print(f"push I {ctx.getText()}")
+
+        
+        """
+        if self.itof_right:
+            print(f"itof")
+            self.itof_right = False
+        if self.itof_left:
+            print(f"itof")
+            self.itof_left = False
+        """
         if self.itof:
             print(f"itof")
             self.itof = False
@@ -248,6 +343,11 @@ class InstructionGenerator2(projectListener):
     def exitWriteCommand(self, ctx: projectParser.WriteCommandContext):
         print(f"print {len(ctx.expression())+1}")
     
+
+    def exitExpression(self, ctx: projectParser.ExpressionContext):
+        print("pop")
+    def exitStatement(self, ctx: projectParser.StatementContext):
+        print("pop")
 
     # Done
     def exitReadCommand(self, ctx: projectParser.ReadCommandContext):
@@ -289,19 +389,15 @@ class InstructionGenerator2(projectListener):
         print("not")
 
 
-    # TODO: exitRPar context not found ????
-
-
-    """
+    # Done
     def exitRPar(self, ctx: projectParser.RParContext):
         match type(ctx.parentCtx):
             case projectParser.ConditionContext:
-                self.write_to_file(f"fjmp {self.index}")
+                print(f"fjmp {self.index}")
                 self.index += 1
             case projectParser.LoopContext:
                 self.index += 1
-                self.write_to_file(f"fjmp {self.index}")
-    """
+                print(f"fjmp {self.index}")
     # Done
     # TODO: test this shit elseStatement?
     def exitCondition(self, ctx: projectParser.ConditionContext):
@@ -348,13 +444,8 @@ class InstructionGenerator2(projectListener):
 
             print(f"save {name.getText()}")
 
-    # Done
-    def enterMulDiv(self, ctx: projectParser.MulDivContext):
-        left = self.getRuleType(ctx.expression(0))
-        right = self.getRuleType(ctx.expression(1))
 
-        if(left == "int" and right == "float") or (left == "float" and right == "int"):
-           self.itof = True
+
 
     def pushTwoExpressions(self, ctx):
             left_expression = ctx.expression(0).getText()

@@ -1,3 +1,20 @@
 int a;
-a = 0;
-read a;
+int b;
+a+b;
+
+
+float c;
+float d;
+c+d;
+
+
+float e;
+int f;
+e+f;
+
+
+
+
+
+1+2*3.3;
+(1+2)*3.3;

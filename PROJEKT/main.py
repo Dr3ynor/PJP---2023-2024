@@ -8,7 +8,7 @@ from VerboseErrorListener import VerboseErrorListener
 from Listener import Listener
 from InstructionGenerator2 import InstructionGenerator2
 def main():
-    file_name = 'inputs/PLC_t4.in'
+    file_name = 'inputs/PLC_t3.in'
     #file_name = 'inputs/PLC_errors.in'
     with open(file_name, 'r') as file:
         data = file.read()

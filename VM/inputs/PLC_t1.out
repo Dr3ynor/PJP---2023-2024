@@ -17,7 +17,7 @@ save s
 load s
 pop
 push S "s(Abcd): "
-load s 
+load s
 print 2
 push F 0.0
 save d
@@ -26,7 +26,7 @@ save d
 load d
 pop
 push S "d(3.141592): "
-load d 
+load d
 print 2
 push I 0
 save n
@@ -36,7 +36,7 @@ save n
 load n
 pop
 push S "n(-500): "
-load n 
+load n
 print 2
 push S ""
 print 1
@@ -47,7 +47,7 @@ save boolean
 load boolean
 pop
 push S "boolean(true): "
-load boolean 
+load boolean
 print 2
 push S ""
 print 1
@@ -102,7 +102,7 @@ save y
 load y
 pop
 push S "y (10.0): "
-load y 
+load y
 print 2
 push S "<Multiple Assignments>"
 print 1
@@ -121,11 +121,11 @@ save i
 load i
 pop
 push S "i=j=k=55: "
-load i 
+load i
 push S "="
-load j 
+load j
 push S "="
-load k 
+load k
 print 6
 push S "<Input - a(int),b(float),c(string),d(bool)>"
 print 1
@@ -162,11 +162,11 @@ save c
 read B
 save e
 push S "a,b,c,e: "
-load a 
+load a
 push S ","
-load b 
+load b
 push S ","
-load c 
+load c
 push S ","
-load e 
+load e
 print 8

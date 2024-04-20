@@ -12,6 +12,7 @@ statement:
 	| loop
 	| forLoop
 	| expression ';'
+	| rightParenthesis
 	| block;
 
 statementList: statement (statement)*;
@@ -34,6 +35,7 @@ expression:
 	| expression op = AND expression					# and
 	| expression op = DOT expression					# concat
 	| expression op = relationalOperations expression	# comparisonExpression
+	//| rightParenthesis									# rightParenthesis
 	| '(' expression ')'								# parenthesis;
 
 writeCommand: 'write' STRING_LITERAL (',' expression)* ';';
@@ -43,9 +45,15 @@ readCommand: 'read' ID (',' ID)* ';';
 assignment: ID (ASSIGN expression)* ';';
 
 condition:
-	'if' '(' expression ')' statement ('else' statement)?;
+	'if' '(' expression rightParenthesis statement (
+		elseStatement
+	)?;
 
-loop: 'while' '(' expression ')' statement;
+elseStatement: 'else' statement;
+
+rightParenthesis: ')';
+
+loop: 'while' '(' expression rightParenthesis statement;
 
 forLoop:
 	'for' '(' assignment ';' expression ';' assignment ')' statement;

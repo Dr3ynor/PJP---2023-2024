@@ -1,23 +1,31 @@
 #!/usr/bin/env python3
-
 class VirtualMachine:
     def __init__(self, filename):
         self.memory = {}
         self.stack = []
+        self.pc = 0
+        self.labels = {}
         self.instructions = self.load_instructions(filename)
 
     def load_instructions(self, filename):
-        with open(filename, 'r') as file:
-            lines = file.readlines()
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+
         instructions = []
-        for line in lines:
-            instruction = line.strip().split()
-            instruction[0] = instruction[0].upper()
-            instructions.append(instruction)
+        for i, line in enumerate(lines):
+            parts = line.strip().split()
+            if parts[0].upper() == 'LABEL':
+                self.labels[parts[1]] = len(instructions)  # Store the label's address
+            else:
+                parts[0] = parts[0].upper()
+                instructions.append(parts)
+
         return instructions
 
     def run(self):
+        #print(self.instructions)
         for instruction in self.instructions:
+            #print(f"Labels: {self.labels}")
             #print(f"Stack: {self.stack}\n")
             #print(f"Memory: {self.memory}")
             if instruction[0] == "PUSH":
@@ -27,12 +35,14 @@ class VirtualMachine:
                     self.stack.append(float(instruction[2]))
                 elif instruction[1] == "S":
                     value = ' '.join(instruction[2:])
-                    #print(f"Value: {value}")
-                    #print(f"Instruction: {instruction}")
                     self.stack.append(value)
-                    #self.stack.append(instruction[2])
+
                 elif instruction[1] == "B":
-                    self.stack.append(bool(instruction[2]))
+                    #print(f"BOOL INSTRUCTION: {instruction}")
+
+                    
+                    self.stack.append(instruction[2])
+                    #print(f"STACK AFTER APPENDING: {self.stack}")
                 else:
                     print(f"Error: Unknown type {instruction[1]} in PUSH instruction")
                     return
@@ -71,7 +81,7 @@ class VirtualMachine:
                     return
                 values = [self.stack.pop() for _ in range(n)]
                 for value in reversed(values):
-                    print(value)
+                        print(value)
 
 
             elif instruction[0] == "POP":
@@ -105,7 +115,8 @@ class VirtualMachine:
                     print("Error: CONCAT expects two strings on the stack")
                     return
 
-                self.stack.append(left + right)
+                result = (left + right).replace('"', '')
+                self.stack.append(result)
 
             elif instruction[0] == "READ":
                 if len(instruction) < 2:
@@ -118,7 +129,7 @@ class VirtualMachine:
                 elif instruction[1] == "S":
                     value = input("Please enter a string: ")
                 elif instruction[1] == "B":
-                    value = input("Please enter a boolean (True/False): ") == "True"
+                    value = input("Please enter a boolean (True/False): ") #== "True"
                 else:
                     print(f"Error: Unknown type {instruction[1]} in READ instruction")
                     return
@@ -153,15 +164,22 @@ class VirtualMachine:
                 if len(self.stack) < 2:
                     print("Error: Not enough values on the stack")
                     return
-                print("Stack: ", self.stack)
                 right = self.stack.pop()
                 left = self.stack.pop()
 
-                #print(f"Left: {left} | Right: {right}")
+
+                if right == "true":
+                    right = True
+                elif right == "false":
+                    right = False
+
+                if left == "true":
+                    left = True
+                elif left == "false":
+                    left = False
+
+                # print(f"Left: {left} | Right: {right}")
                 self.stack.append(left and right)
-
-
-
                 
             elif instruction[0] == "OR":
                 if len(self.stack) < 2:
@@ -169,17 +187,44 @@ class VirtualMachine:
                     return
                 right = self.stack.pop()
                 left = self.stack.pop()
+
+                if right == "true":
+                    right = True
+                elif right == "false":
+                    right = False
+
+                if left == "true":
+                    left = True
+                elif left == "false":
+                    left = False
+
                 self.stack.append(left or right)
+
             elif instruction[0] == "NOT":
                 if not self.stack:
                     print("Error: Stack is empty")
                     return
                 self.stack[-1] = not self.stack[-1]
             
+            elif instruction[0] == 'FJMP':
+                if not self.stack:
+                    print("Error: Stack is empty")
+                    return
+                if not self.stack[-1]:
+                    try:
+                        self.pc = self.labels[instruction[1]]
+                    except KeyError:
+                        print(f"Error: Label {instruction[1]} not found | FJMP")
+                        return
+                else:
+                    self.pc += 1
 
-
-
-
+            elif instruction[0] == 'JMP':
+                try:
+                    self.pc = self.labels[instruction[1]]
+                except KeyError:
+                    print(f"Error: Label {instruction[1]} not found | JMP")
+                    return
 
             else:
                 print(f"Error: Unknown instruction {instruction[0]}")
@@ -189,6 +234,24 @@ class VirtualMachine:
 #filename = "inputs/lab_input"
 #filename = "inputs/testing"
 
-filename = "inputs/PLC_t3.out"
+"""
+for i in range(1,4):
+    filename = f"inputs/PLC_t{i}.out"
+
+    vm = VirtualMachine(filename)
+    vm.run()
+
+    # print(vm.memory)
+    print("\n\n\n ---------------------- \n\n\n")
+
+
+"""
+filename = "inputs/PLC_t2.out"
+
 vm = VirtualMachine(filename)
 vm.run()
+
+string1 = "abc"
+string2 = "def"
+
+print(string1 + string2)

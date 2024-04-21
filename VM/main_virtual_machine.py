@@ -6,6 +6,7 @@ class VirtualMachine:
         self.pc = 0
         self.labels = {}
         self.instructions = self.load_instructions(filename)
+        print(f"INSTRUCTIONS: {self.instructions}")
 
     def load_instructions(self, filename):
         with open(filename, 'r') as f:
@@ -14,11 +15,9 @@ class VirtualMachine:
         instructions = []
         for i, line in enumerate(lines):
             parts = line.strip().split()
-            if parts[0].upper() == 'LABEL':
-                self.labels[parts[1]] = len(instructions)  # Store the label's address
-            else:
-                parts[0] = parts[0].upper()
-                instructions.append(parts)
+
+            parts[0] = parts[0].upper()
+            instructions.append(parts)
 
         return instructions
 
@@ -80,8 +79,10 @@ class VirtualMachine:
                     print(f"Error: Not enough values on the stack")
                     return
                 values = [self.stack.pop() for _ in range(n)]
-                for value in reversed(values):
-                        print(value)
+                print(values[::-1])
+
+                #for value in reversed(values):
+                        #print(value)
 
 
             elif instruction[0] == "POP":
@@ -130,6 +131,15 @@ class VirtualMachine:
                     value = input("Please enter a string: ")
                 elif instruction[1] == "B":
                     value = input("Please enter a boolean (True/False): ") #== "True"
+
+                    if value.upper() == "TRUE":
+                        value = True
+                    elif value.upper() == "FALSE":
+                        value = False
+                    else:
+                        print("Error: Invalid boolean value")
+                        return
+
                 else:
                     print(f"Error: Unknown type {instruction[1]} in READ instruction")
                     return
@@ -243,15 +253,10 @@ for i in range(1,4):
 
     # print(vm.memory)
     print("\n\n\n ---------------------- \n\n\n")
-
-
 """
-filename = "inputs/PLC_t2.out"
+
+
+filename = "inputs/PLC_t1.out"
 
 vm = VirtualMachine(filename)
 vm.run()
-
-string1 = "abc"
-string2 = "def"
-
-print(string1 + string2)

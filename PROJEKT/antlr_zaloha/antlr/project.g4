@@ -12,13 +12,12 @@ statement:
 	| loop
 	| forLoop
 	| expression ';'
-	| rightParenthesis
 	| block;
 
 statementList: statement (statement)*;
 
 block: '{' statementList '}';
-
+rightParenthesis: ')';
 expression:
 	INT													# int
 	| FLOAT												# float
@@ -30,12 +29,11 @@ expression:
 	| expression op = (ADD | SUB) expression			# addSub
 	| expression op = (MUL | DIV) expression			# mulDiv
 	| expression op = MOD expression					# mod
-	| expression op = AND expression					# and
 	| expression op = OR expression						# or
 	| expression op = AND expression					# and
 	| expression op = DOT expression					# concat
 	| expression op = relationalOperations expression	# comparisonExpression
-	//| rightParenthesis									# rightParenthesis
+	//| rightParenthesis									# rightParenthesisExp
 	| '(' expression ')'								# parenthesis;
 
 writeCommand: 'write' STRING_LITERAL (',' expression)* ';';
@@ -44,6 +42,7 @@ readCommand: 'read' ID (',' ID)* ';';
 
 assignment: ID (ASSIGN expression)* ';';
 
+
 condition:
 	'if' '(' expression rightParenthesis statement (
 		elseStatement
@@ -51,7 +50,7 @@ condition:
 
 elseStatement: 'else' statement;
 
-rightParenthesis: ')';
+
 
 loop: 'while' '(' expression rightParenthesis statement;
 

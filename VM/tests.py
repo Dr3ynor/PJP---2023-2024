@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import unittest
 import sys
 import io
@@ -14,7 +16,7 @@ class TestVirtualMachine(unittest.TestCase):
     def test_jmp(self, filename="inputs/testing"):
         self.vm = VirtualMachine(filename)
         self.vm.load_instructions(filename)
-        self.vm.run()
+        self.vm.run2()
         output = self.captured_output.getvalue().strip()  # Get stdout output
         self.assertNotIn("should not be printed", output)
         self.assertIn("JMP successful", output)
@@ -22,7 +24,7 @@ class TestVirtualMachine(unittest.TestCase):
     def test_fjmp(self, filename="inputs/testing"):
         self.vm = VirtualMachine(filename)
         self.vm.load_instructions(filename)
-        self.vm.run()
+        self.vm.run2()
         output = self.captured_output.getvalue().strip()  # Get stdout output
         self.assertNotIn("should not be printed", output)
         self.assertIn("FJMP successful", output)

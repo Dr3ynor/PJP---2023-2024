@@ -1,0 +1,19 @@
+if (3<4) write "condition was true";
+else write "condition was false";
+
+if (3<4) {
+    write "condition was true";
+}
+else write "condition was false";
+
+if (7<4) write "condition was true";
+else {
+    write "condition was false";
+}
+
+if (3<4) {
+    write "condition was true";
+}
+else {
+    write "condition was false";
+}

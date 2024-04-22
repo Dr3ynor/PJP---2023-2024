@@ -6,7 +6,9 @@ statement:
 	emptyCommand = ';'
 	| variableDeclaration
 	| writeCommand
+	//| assignment
 	| readCommand
+	| conditionWithoutBrackets
 	| condition
 	| loop
 	| forLoop
@@ -14,7 +16,6 @@ statement:
 	| block;
 
 block: '{' statementList '}';
-
 statementList: statement (statement)*;
 
 expression:
@@ -38,23 +39,27 @@ expression:
 	| expression LESS expression				# less
 	| expression GREATER expression				# greater
 	| expression LESS_EQUAL expression			# lessEqual
-	| expression GREATER_EQUAL expression		# greaterEqual;
-
-rPar: ')';
+	| expression GREATER_EQUAL expression		# greaterEqual
+	| RPar										# rPar;
 
 readCommand: 'read' expression (',' expression)* ';';
 
 writeCommand: 'write' STRING_LITERAL (',' expression)* ';';
 
-condition:
-	'if' '(' expression rPar statement (elseStatement)?;
-
+//assignment: ID '=' expression;
 elseStatement: 'else' statement;
+condition:
+	'if' '(' expression RPar '{' statement* '}' (elseStatement)?;
 
-loop: 'while' '(' expression rPar '{' statement* '}';
+conditionWithoutBrackets:
+	'if' '(' expression ')' statement (elseStatement statement)?;
+
+loop: 'while' '(' expression RPar '{' statement* '}';
 
 forLoop:
-	'for' '(' expression ';' expression ';' expression rPar '{' statement* '}';
+	'for' '(' expression ';' expression ';' expression ')' '{' statement* '}';
+
+RPar: ')';
 
 variableDeclaration: TYPE_IDENTIFIER ID (',' ID)* ';';
 

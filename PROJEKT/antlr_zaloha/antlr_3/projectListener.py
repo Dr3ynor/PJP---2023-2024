@@ -197,6 +197,15 @@ class projectListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by projectParser#rPar.
+    def enterRPar(self, ctx:projectParser.RParContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#rPar.
+    def exitRPar(self, ctx:projectParser.RParContext):
+        pass
+
+
     # Enter a parse tree produced by projectParser#greaterEqual.
     def enterGreaterEqual(self, ctx:projectParser.GreaterEqualContext):
         pass
@@ -233,15 +242,6 @@ class projectListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by projectParser#rPar.
-    def enterRPar(self, ctx:projectParser.RParContext):
-        pass
-
-    # Exit a parse tree produced by projectParser#rPar.
-    def exitRPar(self, ctx:projectParser.RParContext):
-        pass
-
-
     # Enter a parse tree produced by projectParser#readCommand.
     def enterReadCommand(self, ctx:projectParser.ReadCommandContext):
         pass
@@ -260,6 +260,15 @@ class projectListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by projectParser#elseStatement.
+    def enterElseStatement(self, ctx:projectParser.ElseStatementContext):
+        pass
+
+    # Exit a parse tree produced by projectParser#elseStatement.
+    def exitElseStatement(self, ctx:projectParser.ElseStatementContext):
+        pass
+
+
     # Enter a parse tree produced by projectParser#condition.
     def enterCondition(self, ctx:projectParser.ConditionContext):
         pass
@@ -269,12 +278,12 @@ class projectListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by projectParser#elseStatement.
-    def enterElseStatement(self, ctx:projectParser.ElseStatementContext):
+    # Enter a parse tree produced by projectParser#conditionWithoutBrackets.
+    def enterConditionWithoutBrackets(self, ctx:projectParser.ConditionWithoutBracketsContext):
         pass
 
-    # Exit a parse tree produced by projectParser#elseStatement.
-    def exitElseStatement(self, ctx:projectParser.ElseStatementContext):
+    # Exit a parse tree produced by projectParser#conditionWithoutBrackets.
+    def exitConditionWithoutBrackets(self, ctx:projectParser.ConditionWithoutBracketsContext):
         pass
 
 

@@ -8,7 +8,11 @@ from VerboseErrorListener import VerboseErrorListener
 from Listener import Listener
 from InstructionGenerator2 import InstructionGenerator2
 def main():
+    #file_name = 'inputs/PLC_t1.in'
+    #file_name = 'inputs/PLC_t2.in'
     file_name = 'inputs/PLC_t3.in'
+    #file_name = 'inputs/PLC_t5.in'
+
     #file_name = 'inputs/PLC_errors.in'
     with open(file_name, 'r') as file:
         data = file.read()
@@ -39,8 +43,6 @@ def main():
         return
     print("Parsing completed")
 
-    
-    
 
     walker.walk(listener, tree)
     print("-----------------------Type Checking-----------------------")
@@ -55,7 +57,6 @@ def main():
     print("Type checking completed")
 
     print("-----------------------Generating instructions-------------")
-
 
 
     instruction_generator = InstructionGenerator2()

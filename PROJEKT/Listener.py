@@ -202,13 +202,6 @@ class Listener(projectListener):
         if data_type != "bool":
             self.errors.append(f"Error: Condition requires bool, but got {data_type} | exitCondition")
     
-    # TODO: TEST THIS:
-    def exitConditionWithoutBrackets(self, ctx: projectParser.ConditionWithoutBracketsContext):
-        value = ctx.expression()
-        data_type =self.getRuleType(value)
-        if data_type != "bool":
-            self.errors.append(f"Error: Condition requires bool, but got {data_type} | exitConditionWithoutBrackets")
-
     def exitForLoop(self, ctx: projectParser.ForLoopContext):
         data_type = self.getRuleType(ctx.expression(0))
         data_type2 = self.getRuleType(ctx.expression(1))

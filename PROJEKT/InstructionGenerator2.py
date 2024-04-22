@@ -108,11 +108,6 @@ class InstructionGenerator2(projectListener):
         else:
             return 'Unknown'
         
-
-
-        
-
-
     # >
     def enterGreater(self, ctx: projectParser.GreaterContext):
         self.intToFloat(ctx)
@@ -120,23 +115,17 @@ class InstructionGenerator2(projectListener):
     def exitGreater(self, ctx: projectParser.GreaterContext):
         print(f"gt")
 
-
-
     # <
     def enterLess(self, ctx: projectParser.LessContext):
         self.intToFloat(ctx)
     def exitLess(self, ctx: projectParser.LessContext):
         print(f"lt")
-    
-
 
     # ==
     def enterEqual(self, ctx: projectParser.EqualContext):
         self.intToFloat(ctx)
     def exitEqual(self, ctx: projectParser.EqualContext):
         print(f"eq")
-
-
 
     # !=
     def exitNotEqual(self, ctx: projectParser.NotEqualContext):
@@ -146,26 +135,9 @@ class InstructionGenerator2(projectListener):
         print(f"not")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def enterWriteCommand(self, ctx: projectParser.WriteCommandContext):
         string_literal = ctx.STRING_LITERAL().getText()
-        expressions = [expr.getText() for expr in ctx.expression()]
+        #expressions = [expr.getText() for expr in ctx.expression()]
         print(f"push S {string_literal}")
 
 
@@ -286,30 +258,21 @@ class InstructionGenerator2(projectListener):
     def exitNot(self, ctx: projectParser.NotContext):
         print("not")
 
-    # Done
-    def exitRightParenthesis(self, ctx: projectParser.ParenthesisContext):
-        print(f"EXIT RPAR CONTEXT:{ctx}")
-        match type(ctx.parentCtx):
-            case projectParser.ConditionContext:
-                print(f"fjmp {self.index}")
-                self.index += 1
-            case projectParser.LoopContext:
-                self.index += 1
-                print(f"fjmp {self.index}")
 
     # Done
-    # TODO: test this shit elseStatement?
-    def exitCondition(self, ctx: projectParser.ConditionContext):
+    def exitCondition(self, ctx: projectParser.ConditionContext):    
         if ctx.elseStatement() is None:
             print(f"jmp {self.index}")
             print(f"label {self.index - 1}")
             print(f"label {self.index}")
             self.index += 1
+
     # Done
     def enterElseStatement(self, ctx: projectParser.ElseStatementContext):
         print(f"jmp {self.index}")
         print(f"label {self.index - 1}")
         self.index += 1
+
     # Done
     def exitElseStatement(self, ctx: projectParser.ElseStatementContext):
         print(f"label {self.index - 1}")
@@ -321,7 +284,16 @@ class InstructionGenerator2(projectListener):
         print(f"jmp {self.index - 1}")
         print(f"label {self.index}")
         self.index += 1
-    
+
+    def exitRPar(self, ctx:projectParser.RParContext):
+        match type(ctx.parentCtx):
+            case projectParser.ConditionContext:
+                print(f"fjmp {self.index}")
+                self.index += 1
+            case projectParser.LoopContext:
+                self.index += 1
+                print(f"fjmp {self.index}")
+
     # Done
     def exitVariableDeclaration(self, ctx: projectParser.VariableDeclarationContext):
         for i in range(len(ctx.ID())):
